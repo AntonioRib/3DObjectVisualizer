@@ -18,16 +18,35 @@ import static javax.media.opengl.GL2.*; // GL2 constants
 
 public class BuildObject implements GLEventListener {
 
-	private int width, height;
+	public static int VIEWPORTNUMBER = 4;
+	public static int DEFAULT_WIDTH = 400;
+	public static int DEFAULT_HEIGHT = 280;
+	
+	private int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		buildHouse(drawable);
+		GL2 gl = drawable.getGL().getGL2();
+		GLU glu = new GLU();
+		
+		gl.glClear(GL_COLOR_BUFFER_BIT);
+		for(int i=0; i<VIEWPORTNUMBER/2; i++){
+			gl.glViewport(i*(width/2), (height/2), (width/2), (height/2));
+			gl.glMatrixMode(GL_PROJECTION);
+			gl.glLoadIdentity();
+			glu.gluOrtho2D(0.0, DEFAULT_WIDTH, -DEFAULT_HEIGHT,  0.0);
+			buildHouse(drawable);
+			
+			gl.glViewport(i*(width/2), 0, (width/2), (height/2));
+			gl.glMatrixMode(GL_PROJECTION);
+			gl.glLoadIdentity();
+			glu.gluOrtho2D(0.0, DEFAULT_WIDTH, -DEFAULT_HEIGHT,  0.0);
+			buildHouse(drawable);
+		}
 	}
 
 	private void buildHouse(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
-		gl.glClear(GL_COLOR_BUFFER_BIT);
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
 		
@@ -77,14 +96,8 @@ public class BuildObject implements GLEventListener {
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		GL2 gl = drawable.getGL().getGL2();
 		this.width = width;
 		this.height = height;
-		GLU glu = new GLU();
-		gl.glViewport(0, 0, width, height);
-		gl.glMatrixMode(GL_PROJECTION);
-		gl.glLoadIdentity();
-		glu.gluOrtho2D(0.0, 400.0, -280.0,  0.0);
 	}
 
 	public static void main(String[] args) {
@@ -93,7 +106,7 @@ public class BuildObject implements GLEventListener {
 				JFrame frame = new JFrame("3D Object Visualizer");
 				GLCanvas canvas = new GLCanvas();
 				canvas.addGLEventListener(new BuildObject());
-				canvas.setSize(400,280);
+				canvas.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 				frame.add(canvas);
 				frame.pack();
 				frame.addWindowListener(new WindowAdapter() {
