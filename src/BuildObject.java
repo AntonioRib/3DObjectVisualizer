@@ -1,5 +1,8 @@
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -22,6 +25,7 @@ public class BuildObject implements GLEventListener {
 	public static int DEFAULT_WIDTH = 400;
 	public static int DEFAULT_HEIGHT = 280;
 	
+	private ObjectLoader obj;
 	private int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	
 	@Override
@@ -29,59 +33,50 @@ public class BuildObject implements GLEventListener {
 		GL2 gl = drawable.getGL().getGL2();
 		GLU glu = new GLU();
 		
-		gl.glClear(GL_COLOR_BUFFER_BIT);
-		for(int i=0; i<VIEWPORTNUMBER/2; i++){
-			gl.glViewport(i*(width/2), (height/2), (width/2), (height/2));
-			gl.glMatrixMode(GL_PROJECTION);
-			gl.glLoadIdentity();
-			glu.gluOrtho2D(0.0, DEFAULT_WIDTH, -DEFAULT_HEIGHT,  0.0);
-			buildHouse(drawable);
+		gl.glClearColor(0,0,0,0);
+		gl.glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+		gl.glMatrixMode(GL_PROJECTION);  // Set up the projection.
+		gl.glLoadIdentity();
+		gl.glOrtho(-10,10,-10,10,-20,20);
+		gl.glMatrixMode(GL_MODELVIEW);
+		
+		gl.glLoadIdentity();  
 			
-			gl.glViewport(i*(width/2), 0, (width/2), (height/2));
-			gl.glMatrixMode(GL_PROJECTION);
-			gl.glLoadIdentity();
-			glu.gluOrtho2D(0.0, DEFAULT_WIDTH, -DEFAULT_HEIGHT,  0.0);
-			buildHouse(drawable);
+		gl.glViewport(0, (height/2), (width/2), (height/2));
+		gl.glRotatef(30, 1, 0, 0);
+		gl.glRotatef(30, 0, 1, 0);
+		drawObj(gl);
+				
+		gl.glViewport((width/2), (height/2), (width/2), (height/2));	
+		drawObj(gl);
+		
+		gl.glViewport(0, 0, (width/2), (height/2));
+		drawObj(gl);
+		
+		gl.glViewport((width/2), 0, (width/2), (height/2));
+		drawObj(gl);
+	}
+	
+	private void drawObj(GL2 gl){
+		for(Face f : obj.getFaces()){
+			gl.glPushMatrix();
+			
+//			gl.glColor3d(Math.random(), Math.random(), Math.random());         // Color
+			gl.glTranslatef(0,0,0.5f);    
+			gl.glNormal3f(0,0,1);       
+			gl.glBegin(GL_POLYGON);
+			for(Point3D p : f.getPoints()){
+				gl.glVertex3f(p.getX(), p.getY(), p.getZ());
+				System.out.println("X: "+p.getX()+" Y: "+p.getY()+" Z: "+p.getZ());
+			}
+			gl.glEnd();
+			
+			gl.glPopMatrix();
 		}
 	}
 
-	private void buildHouse(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
-		gl.glMatrixMode(GL_MODELVIEW);
-		gl.glLoadIdentity();
-		
-		gl.glColor3d(0.0, 0.0, 0.0);	// walls
-		gl.glBegin(GL_LINES);
-		gl.glVertex2d(120.0, -220.0);
-		gl.glVertex2d(120.0, -140.0);
-		gl.glVertex2d(280.0, -220.0);
-		gl.glVertex2d(280.0, -140.0);
-		gl.glEnd();
-
-		gl.glColor3d(0.0, 0.0, 1.0);	// door
-		gl.glBegin(GL_LINE_STRIP);
-		gl.glVertex2d(140.0, -220.0);
-		gl.glVertex2d(140.0, -160.0);
-		gl.glVertex2d(180.0, -160.0);
-		gl.glVertex2d(180.0, -220.0);
-		gl.glEnd();
-
-		gl.glColor3d(1.0, 0.0, 1.0);	// window
-		gl.glBegin(GL_LINE_LOOP);
-		gl.glVertex2d(200.0, -160.0);
-		gl.glVertex2d(260.0, -160.0);
-		gl.glVertex2d(260.0, -200.0);
-		gl.glVertex2d(200.0, -200.0);
-		gl.glEnd();
-
-		gl.glColor3d(1.0, 0.0, 0.0);	// roof
-		gl.glBegin(GL_TRIANGLES);
-		gl.glVertex2d(100.0, -140.0);
-		gl.glVertex2d(200.0, -60.0);
-		gl.glVertex2d(300.0, -140.0);
-		gl.glEnd();
-	}
-
+	
 	@Override
 	public void dispose(GLAutoDrawable arg0) {
 		// TODO Auto-generated method stub
@@ -92,6 +87,11 @@ public class BuildObject implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+		gl.glEnable(GL_DEPTH_TEST);
+		try {
+			obj = new ObjectLoader();
+			obj.load(new File("objects/cow-nonormals.obj"));
+		} catch (IOException e) {e.printStackTrace();}
 	}
 
 	@Override
