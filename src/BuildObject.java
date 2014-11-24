@@ -16,7 +16,7 @@ import static javax.media.opengl.GL.*;  // GL constants
 import static javax.media.opengl.GL2.*; // GL2 constants
 
 /**
- * @author M. PrÃ³spero (Updated to JOGL2 by Fernando Birra)
+ * @author M. Próspero (Updated to JOGL2 by Fernando Birra)
  */
 
 public class BuildObject implements GLEventListener {
@@ -38,41 +38,45 @@ public class BuildObject implements GLEventListener {
 
 		gl.glMatrixMode(GL_PROJECTION);  // Set up the projection.
 		gl.glLoadIdentity();
-		gl.glOrtho(-10,10,-10,10,-20,20);
+		gl.glOrtho(-10, 10, -10, 10, -20, 20);
 		gl.glMatrixMode(GL_MODELVIEW);
-		
-		gl.glLoadIdentity();  
 			
 		gl.glViewport(0, (height/2), (width/2), (height/2));
-		gl.glRotatef(30, 1, 0, 0);
-		gl.glRotatef(30, 0, 1, 0);
 		drawObj(gl);
 				
-		gl.glViewport((width/2), (height/2), (width/2), (height/2));	
+		gl.glViewport((width/2), (height/2), (width/2), (height/2));
+		gl.glLoadIdentity();
+		gl.glPushMatrix();  
+		gl.glRotatef(90, 0, 1, 0);
 		drawObj(gl);
+		gl.glPopMatrix();
 		
 		gl.glViewport(0, 0, (width/2), (height/2));
+		gl.glLoadIdentity();
+		gl.glPushMatrix();  
+		gl.glRotatef(90, 1, 0, 0);
 		drawObj(gl);
+		gl.glPopMatrix();
 		
 		gl.glViewport((width/2), 0, (width/2), (height/2));
+		gl.glLoadIdentity();
+		gl.glPushMatrix();  
+		gl.glRotatef(10, 1, 0, 0);
+		gl.glRotatef(235, 0, 1, 0);
+		gl.glTranslatef(5, 2.5f, 0);
 		drawObj(gl);
+		gl.glPopMatrix();
 	}
 	
 	private void drawObj(GL2 gl){
 		for(Face f : obj.getFaces()){
-			gl.glPushMatrix();
-			
-//			gl.glColor3d(Math.random(), Math.random(), Math.random());         // Color
-			gl.glTranslatef(0,0,0.5f);    
-			gl.glNormal3f(0,0,1);       
+			//gl.glColor3d(Math.random(), Math.random(), Math.random());         // Color 
 			gl.glBegin(GL_POLYGON);
 			for(Point3D p : f.getPoints()){
 				gl.glVertex3f(p.getX(), p.getY(), p.getZ());
 				System.out.println("X: "+p.getX()+" Y: "+p.getY()+" Z: "+p.getZ());
 			}
 			gl.glEnd();
-			
-			gl.glPopMatrix();
 		}
 	}
 
@@ -86,12 +90,14 @@ public class BuildObject implements GLEventListener {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
-		gl.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+		gl.glClearColor(0.2f, 0.2f, 0.2f, 0.2f);
 		gl.glEnable(GL_DEPTH_TEST);
 		try {
 			obj = new ObjectLoader();
-			obj.load(new File("objects/cow-nonormals.obj"));
+			obj.load(new File("objects/atom.obj"));
 		} catch (IOException e) {e.printStackTrace();}
+		gl.glPolygonMode(GL_FRONT, GL_LINE);
+		gl.glPolygonMode(GL_BACK, GL_LINE);
 	}
 
 	@Override
