@@ -1,0 +1,191 @@
+package objects;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+
+import javax.media.opengl.GL2;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLEventListener;
+import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.glu.GLU;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+import com.jogamp.opengl.util.gl2.GLUT;
+
+import static javax.media.opengl.GL.*;  // GL constants
+import static javax.media.opengl.GL2.*; // GL2 constants
+import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
+import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
+
+/**
+ * @author M. Próspero (Updated to JOGL2 by Fernando Birra)
+ */
+
+public class BuildObject implements GLEventListener {
+	
+	public enum displayTypes { 
+		PRINCIPAL, LATERAL_ESQ, LATERAL_DIR, 
+		PLANTA, PROJ_OBL, PROJ_AXON, PROJ_PRESP;
+	}
+	
+	public enum renderTypes { 
+		SOLID, WIREFRAME, WIRESOLID;
+	}
+
+	public static int VIEWPORTNUMBER = 4;
+	public static int GRID_SIDE = 1;
+	
+	private Shape obj;
+	private int width , height;
+	private String path;
+	
+	public BuildObject(int width, int height, String objPath) {
+		this.width = width;
+		this.height = height;
+		this.path = objPath;
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		GLUT glut = new GLUT() ;
+		
+		double aRatio = width / (double)height; 
+	    	    
+	    gl.glMatrixMode(GL_PROJECTION);
+		gl.glLoadIdentity();
+		
+		gl.glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
+		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	   
+		
+	    if (width <= height)
+	    	gl.glOrtho (-1.0, 1.0, -1.0 / aRatio, 1.0 / aRatio, -1.0, 1.0);
+	    else
+	    	gl.glOrtho (-1.0*aRatio, 1.0*aRatio, -1.0, 1.0, -1.0, 1.0);
+	    
+		gl.glViewport(0, (height/2), (width/2), (height/2));
+		displayScene(gl);
+				
+		gl.glViewport((width/2), (height/2), (width/2), (height/2));
+		displayScene(gl);
+		
+		gl.glViewport(0, 0, (width/2), (height/2));
+		displayScene(gl);
+		
+		gl.glViewport((width/2), 0, (width/2), (height/2));
+		displayScene(gl);
+	    
+	    gl.glFlush() ;
+	    
+	    System.out.println("MaxAbs: "+obj.getMaxAbs());
+	}
+	
+	private void drawFloor(GL2 gl){
+		gl.glBegin(GL_LINES);
+		for(float i=-GRID_SIDE; i<GRID_SIDE; i += 0.1f){
+			System.out.println(i);
+	        gl.glVertex3f(i, obj.getyMin()/obj.getMaxAbs(), -GRID_SIDE);
+	        gl.glVertex3f(i, obj.getyMin()/obj.getMaxAbs(), GRID_SIDE);
+	 
+	        gl.glVertex3f(-GRID_SIDE, obj.getyMin()/obj.getMaxAbs(), i);
+	        gl.glVertex3f(GRID_SIDE, obj.getyMin()/obj.getMaxAbs(),  i);
+		}
+		gl.glEnd();
+	}
+	
+	private void drawObj(GL2 gl){
+		for(Face f : obj.getFaces()){
+			gl.glBegin(GL_POLYGON);
+			for(Point3D p : f.getPoints()){
+				gl.glVertex3f(p.getX()/obj.getMaxAbs(), p.getY()/obj.getMaxAbs(), p.getZ()/obj.getMaxAbs());
+				System.out.println("X: "+p.getX()/obj.getMaxAbs()+" Y: "+p.getY()/obj.getMaxAbs()+" Z: "+p.getZ()/obj.getMaxAbs());
+			}
+			gl.glEnd();
+		}
+		System.out.println();
+	}
+	
+	private void displayScene(GL2 gl, displayTypes type) {
+		switch (type){
+			case PRINCIPAL:
+				break;
+			case LATERAL_ESQ:
+				break;
+			case LATERAL_DIR:
+				break;
+			case PLANTA: 
+				break;
+			case PROJ_OBL: 
+				break;
+			case PROJ_AXON: 
+				break;
+			case PROJ_PRESP: 
+				break;
+		}
+	}
+	
+	private void renderScene(GL2 gl, renderTypes type){
+		switch (type){
+		case SOLID:
+			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
+			gl.glEnable( GL_POLYGON_OFFSET_FILL );
+			drawObj(gl);
+			break;
+		case WIREFRAME:
+			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			gl.glColor3d(1.0, 0.0, 0.0);
+			drawObj(gl);
+			break;
+		case WIRESOLID:
+			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
+			gl.glEnable( GL_POLYGON_OFFSET_FILL );
+			gl.glPolygonOffset( 1, 1 );
+			gl.glColor3d(1.0, 1.0, 1.0);
+			drawObj(gl);
+			gl.glDisable(GL_POLYGON_OFFSET_FILL);
+
+			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			gl.glColor3d(1.0, 0.0, 0.0);
+			drawObj(gl);
+			break;
+		}
+	}
+	
+	
+	public void displayScene(GL2 gl) {
+		GLUT glu = new GLUT() ;
+		
+		gl.glMatrixMode(GL_MODELVIEW);
+		gl.glLoadIdentity();
+		
+		gl.glPushMatrix();
+		gl.glLoadIdentity();
+		gl.glRotated(15.0, 1.0, 0, 0);
+		gl.glRotated(20.0, 0, 1, 0);
+		
+		gl.glColor3f(0.5f,0.5f,0.5f);
+		drawFloor(gl);
+		   
+		renderScene(gl, renderTypes.WIRESOLID);
+	
+		gl.glPopMatrix();
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable arg0) { }
+
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glEnable(GL_DEPTH_TEST);
+		obj = new Shape(path);
+	}
+
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		this.width = width; this.height = height;
+	}
+}
