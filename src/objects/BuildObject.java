@@ -13,6 +13,7 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.jogamp.newt.event.KeyListener;
 import com.jogamp.opengl.util.gl2.GLUT;
 
 import static javax.media.opengl.GL.*;  // GL constants
@@ -42,10 +43,18 @@ public class BuildObject implements GLEventListener {
 	private int width , height;
 	private String path;
 	
-	public BuildObject(int width, int height, String objPath) {
+	public BuildObject(int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.path = objPath;
+		this.path = null;
+		this.obj = null;
+	}
+	
+	public BuildObject(int width, int height, String path) {
+		this.width = width;
+		this.height = height;
+		this.path = path;
+		this.obj = null;
 	}
 	
 	@Override
@@ -79,19 +88,23 @@ public class BuildObject implements GLEventListener {
 		displayScene(gl);
 	    
 	    gl.glFlush() ;
-	    
-	    System.out.println("MaxAbs: "+obj.getMaxAbs());
 	}
 	
 	private void drawFloor(GL2 gl){
+		float min;
+		if(obj != null)
+			min = obj.getyMin()/obj.getMaxAbs();
+		else
+			min = 0;
+		
 		gl.glBegin(GL_LINES);
 		for(float i=-GRID_SIDE; i<GRID_SIDE; i += 0.1f){
 			System.out.println(i);
-	        gl.glVertex3f(i, obj.getyMin()/obj.getMaxAbs(), -GRID_SIDE);
-	        gl.glVertex3f(i, obj.getyMin()/obj.getMaxAbs(), GRID_SIDE);
+	        gl.glVertex3f(i, min, -GRID_SIDE);
+	        gl.glVertex3f(i, min, GRID_SIDE);
 	 
-	        gl.glVertex3f(-GRID_SIDE, obj.getyMin()/obj.getMaxAbs(), i);
-	        gl.glVertex3f(GRID_SIDE, obj.getyMin()/obj.getMaxAbs(),  i);
+	        gl.glVertex3f(-GRID_SIDE, min, i);
+	        gl.glVertex3f(GRID_SIDE, min,  i);
 		}
 		gl.glEnd();
 	}
@@ -168,8 +181,8 @@ public class BuildObject implements GLEventListener {
 		
 		gl.glColor3f(0.5f,0.5f,0.5f);
 		drawFloor(gl);
-		   
-		renderScene(gl, renderTypes.WIRESOLID);
+		  if(obj != null) 
+			  renderScene(gl, renderTypes.WIRESOLID);
 	
 		gl.glPopMatrix();
 	}
@@ -181,11 +194,40 @@ public class BuildObject implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable(GL_DEPTH_TEST);
-		obj = new Shape(path);
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		this.width = width; this.height = height;
 	}
+	
+
+	/*** GETTERS ***/
+
+	public Shape getObj() {
+		return obj;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public String getPath() {
+		return path;
+	}
+	
+	/*** SETTERS ***/
+
+	public void setPath(String path) {
+		this.path = path;
+		if(path == null)
+			obj = null;
+		else
+			obj = new Shape(path);
+	}
+	
 }
