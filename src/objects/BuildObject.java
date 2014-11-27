@@ -76,21 +76,22 @@ public class BuildObject implements GLEventListener {
 	    	gl.glOrtho (-1.0*aRatio, 1.0*aRatio, -1.0, 1.0, -1.0, 1.0);
 	    
 		gl.glViewport(0, (height/2), (width/2), (height/2));
-		displayScene(gl);
+		displayScene(gl, displayTypes.PRINCIPAL);
 				
 		gl.glViewport((width/2), (height/2), (width/2), (height/2));
-		displayScene(gl);
+		displayScene(gl, displayTypes.PRINCIPAL);
 		
 		gl.glViewport(0, 0, (width/2), (height/2));
-		displayScene(gl);
+		displayScene(gl, displayTypes.PRINCIPAL);
 		
 		gl.glViewport((width/2), 0, (width/2), (height/2));
-		displayScene(gl);
+		displayScene(gl, displayTypes.PRINCIPAL);
 	    
 	    gl.glFlush() ;
 	}
 	
 	private void drawFloor(GL2 gl){
+		gl.glColor3d(1.0, 1.0, 1.0);
 		float min;
 		if(obj != null)
 			min = obj.getyMin()/obj.getMaxAbs();
@@ -122,6 +123,8 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	private void displayScene(GL2 gl, displayTypes type) {
+		gl.glPushMatrix();
+		gl.glLoadIdentity();
 		switch (type){
 			case PRINCIPAL:
 				break;
@@ -138,32 +141,36 @@ public class BuildObject implements GLEventListener {
 			case PROJ_PRESP: 
 				break;
 		}
+		drawFloor(gl);
+		if(obj != null) 
+			renderScene(gl, renderTypes.WIRESOLID);
+		gl.glPopMatrix();
 	}
 	
 	private void renderScene(GL2 gl, renderTypes type){
 		switch (type){
-		case SOLID:
-			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
-			gl.glEnable( GL_POLYGON_OFFSET_FILL );
-			drawObj(gl);
-			break;
-		case WIREFRAME:
-			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			gl.glColor3d(1.0, 0.0, 0.0);
-			drawObj(gl);
-			break;
-		case WIRESOLID:
-			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
-			gl.glEnable( GL_POLYGON_OFFSET_FILL );
-			gl.glPolygonOffset( 1, 1 );
-			gl.glColor3d(1.0, 1.0, 1.0);
-			drawObj(gl);
-			gl.glDisable(GL_POLYGON_OFFSET_FILL);
-
-			gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			gl.glColor3d(1.0, 0.0, 0.0);
-			drawObj(gl);
-			break;
+			case SOLID:
+				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
+				gl.glColor3d(1.0, 1.0, 1.0);
+				drawObj(gl);
+				break;
+			case WIREFRAME:
+				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				gl.glColor3d(1.0, 0.0, 0.0);
+				drawObj(gl);
+				break;
+			case WIRESOLID:
+				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
+				gl.glEnable( GL_POLYGON_OFFSET_FILL );
+				gl.glPolygonOffset( 1, 1 );
+				gl.glColor3d(1.0, 1.0, 1.0);
+				drawObj(gl);
+				gl.glDisable(GL_POLYGON_OFFSET_FILL);
+	
+				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				gl.glColor3d(1.0, 0.0, 0.0);
+				drawObj(gl);
+				break;
 		}
 	}
 	

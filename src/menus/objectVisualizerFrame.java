@@ -96,7 +96,7 @@ public class objectVisualizerFrame extends JFrame {
 						break;
 					case KeyEvent.VK_PERIOD:
 						if(loaded) {
-							System.out.println("Period");
+							System.out.println("Erased");
 							bObj.setPath(null);
 							canvas.repaint();
 							loaded = false;
