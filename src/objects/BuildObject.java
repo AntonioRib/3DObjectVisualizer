@@ -100,7 +100,6 @@ public class BuildObject implements GLEventListener {
 		
 		gl.glBegin(GL_LINES);
 		for(float i=-GRID_SIDE; i<GRID_SIDE; i += 0.1f){
-			System.out.println(i);
 	        gl.glVertex3f(i, min, -GRID_SIDE);
 	        gl.glVertex3f(i, min, GRID_SIDE);
 	 
@@ -123,10 +122,16 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	private void displayScene(GL2 gl, displayTypes type) {
+		GLUT glu = new GLUT() ;
+		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glPushMatrix();
 		gl.glLoadIdentity();
 		switch (type){
 			case PRINCIPAL:
+				if(obj != null) {
+					gl.glTranslatef(0, -(obj.getyMax()-obj.getyMin())/(2*obj.getMaxAbs()), 0);
+					System.out.println("AQUI AQUI AQUI AQUI - "+-(obj.getyMax()-obj.getyMin())/(2*obj.getMaxAbs()));
+				}
 				break;
 			case LATERAL_ESQ:
 				break;
