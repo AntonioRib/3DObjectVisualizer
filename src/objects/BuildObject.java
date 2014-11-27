@@ -60,7 +60,6 @@ public class BuildObject implements GLEventListener {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
-		GLUT glut = new GLUT() ;
 		
 		double aRatio = width / (double)height; 
 	    	    
@@ -71,15 +70,15 @@ public class BuildObject implements GLEventListener {
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	   
 		
 	    if (width <= height)
-	    	gl.glOrtho (-1.0, 1.0, -1.0 / aRatio, 1.0 / aRatio, -1.0, 1.0);
+	    	gl.glOrtho (-1.0, 1.0, -1.0 / aRatio, 1.0 / aRatio, -2.0, 2.0);
 	    else
-	    	gl.glOrtho (-1.0*aRatio, 1.0*aRatio, -1.0, 1.0, -1.0, 1.0);
+	    	gl.glOrtho (-1.0*aRatio, 1.0*aRatio, -1.0, 1.0, -2.0, 2.0);
 	    
 		gl.glViewport(0, (height/2), (width/2), (height/2));
 		displayScene(gl, displayTypes.PRINCIPAL);
 				
 		gl.glViewport((width/2), (height/2), (width/2), (height/2));
-		displayScene(gl, displayTypes.PRINCIPAL);
+		displayScene(gl, displayTypes.LATERAL_ESQ);
 		
 		gl.glViewport(0, 0, (width/2), (height/2));
 		displayScene(gl, displayTypes.PRINCIPAL);
@@ -114,30 +113,52 @@ public class BuildObject implements GLEventListener {
 			gl.glBegin(GL_POLYGON);
 			for(Point3D p : f.getPoints()){
 				gl.glVertex3f(p.getX()/obj.getMaxAbs(), p.getY()/obj.getMaxAbs(), p.getZ()/obj.getMaxAbs());
-				System.out.println("X: "+p.getX()/obj.getMaxAbs()+" Y: "+p.getY()/obj.getMaxAbs()+" Z: "+p.getZ()/obj.getMaxAbs());
+//				System.out.println("X: "+p.getX()/obj.getMaxAbs()+" Y: "+p.getY()/obj.getMaxAbs()+" Z: "+p.getZ()/obj.getMaxAbs());
 			}
 			gl.glEnd();
 		}
-		System.out.println();
+//		System.out.println();
 	}
 	
-	private void displayScene(GL2 gl, displayTypes type) {
-		GLUT glu = new GLUT() ;
+	private void displayScene(GL2 gl, displayTypes type) {	
 		gl.glMatrixMode(GL_MODELVIEW);
-		gl.glPushMatrix();
 		gl.glLoadIdentity();
+		displayFloor(gl, type);
+		if(obj != null){
+			switch (type){
+				case PRINCIPAL:
+					gl.glTranslatef(-(obj.getxCenter()/obj.getMaxAbs()), 0, 0);
+					break;
+				case LATERAL_ESQ:
+					gl.glTranslatef(0, 0, -(obj.getzCenter()/obj.getMaxAbs()));
+					break;
+				case LATERAL_DIR:
+					break;
+				case PLANTA: 
+					break;
+				case PROJ_OBL: 
+					break;
+				case PROJ_AXON: 
+					break;
+				case PROJ_PRESP: 
+					break;
+			}
+			renderScene(gl, renderTypes.WIRESOLID);
+		}
+	}
+	
+	private void displayFloor(GL2 gl, displayTypes type){
+		GLUT glu = new GLUT() ;
 		switch (type){
 			case PRINCIPAL:
-				if(obj != null) {
-					gl.glTranslatef(0, -(obj.getyMax()-obj.getyMin())/(2*obj.getMaxAbs()), 0);
-					System.out.println("AQUI AQUI AQUI AQUI - "+-(obj.getyMax()-obj.getyMin())/(2*obj.getMaxAbs()));
-				}
 				break;
 			case LATERAL_ESQ:
+				gl.glRotatef(90, 0, 1, 0);
 				break;
 			case LATERAL_DIR:
 				break;
 			case PLANTA: 
+				//gl.glRotatef(90, 1, 0, 0);
 				break;
 			case PROJ_OBL: 
 				break;
@@ -147,9 +168,6 @@ public class BuildObject implements GLEventListener {
 				break;
 		}
 		drawFloor(gl);
-		if(obj != null) 
-			renderScene(gl, renderTypes.WIRESOLID);
-		gl.glPopMatrix();
 	}
 	
 	private void renderScene(GL2 gl, renderTypes type){
@@ -177,26 +195,6 @@ public class BuildObject implements GLEventListener {
 				drawObj(gl);
 				break;
 		}
-	}
-	
-	
-	public void displayScene(GL2 gl) {
-		GLUT glu = new GLUT() ;
-		
-		gl.glMatrixMode(GL_MODELVIEW);
-		gl.glLoadIdentity();
-		
-		gl.glPushMatrix();
-		gl.glLoadIdentity();
-		gl.glRotated(15.0, 1.0, 0, 0);
-		gl.glRotated(20.0, 0, 1, 0);
-		
-		gl.glColor3f(0.5f,0.5f,0.5f);
-		drawFloor(gl);
-		  if(obj != null) 
-			  renderScene(gl, renderTypes.WIRESOLID);
-	
-		gl.glPopMatrix();
 	}
 	
 	@Override

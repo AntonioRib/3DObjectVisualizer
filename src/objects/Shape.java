@@ -55,6 +55,10 @@ public class Shape {
 	public float getxMax() {
 		return xMax;
 	}
+	
+	public float getxCenter() {
+		return (xMax+xMin)/2;
+	}
 
 	public float getyMin() {
 		return yMin;
@@ -62,6 +66,10 @@ public class Shape {
 
 	public float getyMax() {
 		return yMax;
+	}
+	
+	public float getyCenter() {
+		return (yMax+yMin)/2;
 	}
 
 	public float getzMin() {
@@ -71,6 +79,13 @@ public class Shape {
 	public float getzMax() {
 		return zMax;
 	}
+	
+	public float getzCenter() {
+		return (zMax+zMin)/2;
+	}
+
+	
+	
 	
 	public float getMaxAbs() {
 		return maxAbs;
