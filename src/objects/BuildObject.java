@@ -42,12 +42,17 @@ public class BuildObject implements GLEventListener {
 	private Shape obj;
 	private int width , height;
 	private String path;
+	private GL2 gl;
+	private GLU glu;
+	
+	private float zoomFactor = 1f;
 	
 	public BuildObject(int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.path = null;
 		this.obj = null;
+		this.gl = null;
 	}
 	
 	public BuildObject(int width, int height, String path) {
@@ -55,42 +60,43 @@ public class BuildObject implements GLEventListener {
 		this.height = height;
 		this.path = path;
 		this.obj = null;
+		this.gl = null;
 	}
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
 		
 		double aRatio = width / (double)height; 
-	    	    
-	    gl.glMatrixMode(GL_PROJECTION);
+
+		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		
 		gl.glClearColor(0.3f, 0.3f, 0.3f, 0.0f);
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	   
 		
-	    if (width <= height)
-	    	gl.glOrtho (-1.0, 1.0, -1.0 / aRatio, 1.0 / aRatio, -2.0, 2.0);
-	    else
-	    	gl.glOrtho (-1.0*aRatio, 1.0*aRatio, -1.0, 1.0, -2.0, 2.0);
+	    if (width <= height){
+	    	gl.glOrtho (-1.0/zoomFactor, 1.0/zoomFactor, -1.0/zoomFactor*aRatio, 1.0/zoomFactor*aRatio, -2.0, 2.0);
+	    } else {
+	    	gl.glOrtho (-1.0*aRatio/zoomFactor, 1.0*aRatio/zoomFactor, -1.0/zoomFactor, 1.0/zoomFactor, -2.0, 2.0);
+	    }
 	    
 		gl.glViewport(0, (height/2), (width/2), (height/2));
-		displayScene(gl, displayTypes.PRINCIPAL);
+		displayScene(displayTypes.PRINCIPAL);
 				
 		gl.glViewport((width/2), (height/2), (width/2), (height/2));
-		displayScene(gl, displayTypes.LATERAL_ESQ);
+		displayScene(displayTypes.LATERAL_ESQ);
 		
 		gl.glViewport(0, 0, (width/2), (height/2));
-		displayScene(gl, displayTypes.PRINCIPAL);
+		displayScene(displayTypes.PLANTA);
 		
 		gl.glViewport((width/2), 0, (width/2), (height/2));
-		displayScene(gl, displayTypes.PRINCIPAL);
+		displayScene(displayTypes.PROJ_AXON);
 	    
 	    gl.glFlush() ;
 	}
 	
-	private void drawFloor(GL2 gl){
-		gl.glColor3d(1.0, 1.0, 1.0);
+	private void drawFloor(){
+		gl.glColor3d(0.4, 0.8, 0.4);
 		float min;
 		if(obj != null)
 			min = obj.getyMin()/obj.getMaxAbs();
@@ -98,7 +104,8 @@ public class BuildObject implements GLEventListener {
 			min = 0;
 		
 		gl.glBegin(GL_LINES);
-		for(float i=-GRID_SIDE; i<GRID_SIDE; i += 0.1f){
+		for(int n=-GRID_SIDE*10; n<=GRID_SIDE*10; n++){
+			float i = 0.1f*n;
 	        gl.glVertex3f(i, min, -GRID_SIDE);
 	        gl.glVertex3f(i, min, GRID_SIDE);
 	 
@@ -108,47 +115,19 @@ public class BuildObject implements GLEventListener {
 		gl.glEnd();
 	}
 	
-	private void drawObj(GL2 gl){
+	private void drawObj(){
 		for(Face f : obj.getFaces()){
 			gl.glBegin(GL_POLYGON);
 			for(Point3D p : f.getPoints()){
 				gl.glVertex3f(p.getX()/obj.getMaxAbs(), p.getY()/obj.getMaxAbs(), p.getZ()/obj.getMaxAbs());
-//				System.out.println("X: "+p.getX()/obj.getMaxAbs()+" Y: "+p.getY()/obj.getMaxAbs()+" Z: "+p.getZ()/obj.getMaxAbs());
 			}
 			gl.glEnd();
 		}
-//		System.out.println();
 	}
 	
-	private void displayScene(GL2 gl, displayTypes type) {	
+	private void displayScene(displayTypes type) {	
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
-		displayFloor(gl, type);
-		if(obj != null){
-			switch (type){
-				case PRINCIPAL:
-					gl.glTranslatef(-(obj.getxCenter()/obj.getMaxAbs()), 0, 0);
-					break;
-				case LATERAL_ESQ:
-					gl.glTranslatef(0, 0, -(obj.getzCenter()/obj.getMaxAbs()));
-					break;
-				case LATERAL_DIR:
-					break;
-				case PLANTA: 
-					break;
-				case PROJ_OBL: 
-					break;
-				case PROJ_AXON: 
-					break;
-				case PROJ_PRESP: 
-					break;
-			}
-			renderScene(gl, renderTypes.WIRESOLID);
-		}
-	}
-	
-	private void displayFloor(GL2 gl, displayTypes type){
-		GLUT glu = new GLUT() ;
 		switch (type){
 			case PRINCIPAL:
 				break;
@@ -156,45 +135,65 @@ public class BuildObject implements GLEventListener {
 				gl.glRotatef(90, 0, 1, 0);
 				break;
 			case LATERAL_DIR:
+				gl.glRotatef(-90, 0, 1, 0);
 				break;
 			case PLANTA: 
-				//gl.glRotatef(90, 1, 0, 0);
+				gl.glRotatef(90, 1, 0, 0);
 				break;
 			case PROJ_OBL: 
 				break;
 			case PROJ_AXON: 
+				gl.glRotatef(-15, 0, 1, 0);
+				gl.glRotatef(15, 1, 0, 0);
 				break;
 			case PROJ_PRESP: 
 				break;
 		}
-		drawFloor(gl);
+		
+		if(obj != null)
+			gl.glTranslatef(0, -(obj.getyCenter()/obj.getMaxAbs()), 0);	
+		drawFloor();
+		if(obj != null){
+			gl.glTranslatef(-(obj.getxCenter()/obj.getMaxAbs()), 0, -1.5f*(obj.getzCenter()/obj.getMaxAbs()));
+			renderScene(gl, renderTypes.WIREFRAME);
+		}
 	}
+	
 	
 	private void renderScene(GL2 gl, renderTypes type){
 		switch (type){
 			case SOLID:
 				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
 				gl.glColor3d(1.0, 1.0, 1.0);
-				drawObj(gl);
+				drawObj();
 				break;
 			case WIREFRAME:
 				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				gl.glColor3d(1.0, 0.0, 0.0);
-				drawObj(gl);
+				drawObj();
 				break;
 			case WIRESOLID:
 				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
 				gl.glEnable( GL_POLYGON_OFFSET_FILL );
 				gl.glPolygonOffset( 1, 1 );
 				gl.glColor3d(1.0, 1.0, 1.0);
-				drawObj(gl);
+				drawObj();
 				gl.glDisable(GL_POLYGON_OFFSET_FILL);
 	
 				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				gl.glColor3d(1.0, 0.0, 0.0);
-				drawObj(gl);
+				drawObj();
 				break;
 		}
+	}
+	
+	public void zoomIn(){
+		zoomFactor += 0.1;
+	}
+	
+	public void zoomOut(){
+		if(zoomFactor >= 0.1)
+			zoomFactor -= 0.1;
 	}
 	
 	@Override
@@ -202,8 +201,10 @@ public class BuildObject implements GLEventListener {
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
+		this.gl = drawable.getGL().getGL2();
 		gl.glEnable(GL_DEPTH_TEST);
+		
+		glu = new GLU();
 	}
 
 	@Override

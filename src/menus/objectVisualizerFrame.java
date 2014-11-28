@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.File;
 
 import javax.media.opengl.awt.GLCanvas;
@@ -14,6 +16,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+
 
 
 
@@ -43,14 +47,18 @@ public class objectVisualizerFrame extends JFrame {
 		this.pack();
 		
 		JMenuBar menuBar = new JMenuBar();
-		JMenu file = new JMenu("File");
+		JMenu fileMenu = new JMenu("File");
+		JMenu shapeMenu = new JMenu("Shape");
 		
-		JMenuItem open = new JMenuItem("Open");
-		file.add(open);
-		menuBar.add(file);
+		JMenuItem openItem = new JMenuItem("Open");
+		JMenuItem clearItem = new JMenuItem("Clear");
 		
-		open.addActionListener(new ActionListener() {
-			
+		fileMenu.add(openItem);
+		shapeMenu.add(clearItem);
+		menuBar.add(fileMenu);
+		menuBar.add(shapeMenu);
+		
+		openItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				FileNameExtensionFilter objFilter = new FileNameExtensionFilter("obj files (*.obj)", "obj");
@@ -65,6 +73,19 @@ public class objectVisualizerFrame extends JFrame {
                 	loaded = true;
                 	System.out.println(file.getPath());
                 }
+			}
+		});
+		
+		clearItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(loaded) {
+					System.out.println("Erased");
+					bObj.setPath(null);
+					canvas.repaint();
+					loaded = false;
+				}
 			}
 		});
 
@@ -90,9 +111,13 @@ public class objectVisualizerFrame extends JFrame {
 						break;
 					case KeyEvent.VK_PLUS: case KeyEvent.VK_ADD:
 						System.out.println("Zoom in");
+						bObj.zoomIn();
+						canvas.repaint();
 						break;
 					case KeyEvent.VK_MINUS: case KeyEvent.VK_SUBTRACT:
 						System.out.println("Zoom out");
+						bObj.zoomOut();
+						canvas.repaint();
 						break;
 					case KeyEvent.VK_PERIOD:
 						if(loaded) {
@@ -103,6 +128,23 @@ public class objectVisualizerFrame extends JFrame {
 						}
 						break;
 				}
+			}
+		});
+		
+		canvas.addMouseWheelListener(new MouseWheelListener() {
+			
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if(e.getWheelRotation() < 0){
+					System.out.println("Zoom in");
+					bObj.zoomIn();
+					canvas.repaint();
+				} else {
+					System.out.println("Zoom out");
+					bObj.zoomOut();
+					canvas.repaint();
+				}
+				
 			}
 		});
 	}
