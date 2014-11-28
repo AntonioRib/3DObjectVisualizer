@@ -46,21 +46,40 @@ public class objectVisualizerFrame extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
 		JMenu viewMenu = new JMenu("View");
+		
 		JMenu renderSubMenu = new JMenu("Render Type");
 		ButtonGroup renderGroup = new ButtonGroup();
 		
 		JRadioButtonMenuItem renderSolidItem = new JRadioButtonMenuItem("Solid");
+		JRadioButtonMenuItem renderWireItem = new JRadioButtonMenuItem("Wireframe");
+		JRadioButtonMenuItem renderSolidWireItem = new JRadioButtonMenuItem("Solid + Wireframe");
+		
 		renderGroup.add(renderSolidItem);
 		renderSubMenu.add(renderSolidItem);
 		
-		JRadioButtonMenuItem renderWireItem = new JRadioButtonMenuItem("Wireframe");
 		renderGroup.add(renderWireItem);
 		renderSubMenu.add(renderWireItem);
 		
-		JRadioButtonMenuItem renderSolidWireItem = new JRadioButtonMenuItem("Solid + Wireframe");
 		renderSolidWireItem.setSelected(true);
 		renderGroup.add(renderSolidWireItem);
 		renderSubMenu.add(renderSolidWireItem);
+		
+		JMenu viewPortSubMenu = new JMenu("4th Viewport Scene");
+		ButtonGroup viewPortGroup = new ButtonGroup();
+		
+		JRadioButtonMenuItem viewPortOblItem = new JRadioButtonMenuItem("Obliq");
+		JRadioButtonMenuItem viewPortAxonItem = new JRadioButtonMenuItem("Axonometric");
+		JRadioButtonMenuItem viewPortPrespItem = new JRadioButtonMenuItem("Prespective");
+		
+		viewPortGroup.add(viewPortOblItem);
+		viewPortSubMenu.add(viewPortOblItem);
+		viewPortOblItem.setSelected(true);
+		
+		viewPortGroup.add(viewPortAxonItem);
+		viewPortSubMenu.add(viewPortAxonItem);
+		
+		viewPortGroup.add(viewPortPrespItem);
+		viewPortSubMenu.add(viewPortPrespItem);
 
 		JMenuItem openItem = new JMenuItem("Open");
 		JMenuItem clearItem = new JMenuItem("Clear");
@@ -70,6 +89,8 @@ public class objectVisualizerFrame extends JFrame {
 		viewMenu.add(clearItem);
 		viewMenu.addSeparator();
 		viewMenu.add(renderSubMenu);
+		viewMenu.addSeparator();
+		viewMenu.add(viewPortSubMenu);
 
 		menuBar.add(fileMenu);
 		menuBar.add(viewMenu);
@@ -95,7 +116,6 @@ public class objectVisualizerFrame extends JFrame {
 		});
 
 		clearItem.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (loaded) {
@@ -127,6 +147,30 @@ public class objectVisualizerFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				bObj.setRendType(BuildObject.renderType.WIRESOLID);
+				canvas.repaint();
+			}
+		});
+		
+		viewPortOblItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				bObj.setDispViewPort4Type(BuildObject.displayType.PROJ_OBL);
+				canvas.repaint();
+			}
+		});
+		
+		viewPortAxonItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				bObj.setDispViewPort4Type(BuildObject.displayType.PROJ_AXON);
+				canvas.repaint();
+			}
+		});
+		
+		viewPortPrespItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				bObj.setDispViewPort4Type(BuildObject.displayType.PROJ_PRESP);
 				canvas.repaint();
 			}
 		});

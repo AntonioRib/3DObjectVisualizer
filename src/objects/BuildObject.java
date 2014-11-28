@@ -66,7 +66,7 @@ public class BuildObject implements GLEventListener {
 		dispViewPort1Type = displayType.PRINCIPAL;
 		dispViewPort2Type = displayType.LATERAL_ESQ;
 		dispViewPort3Type = displayType.PLANTA;
-		dispViewPort4Type = displayType.PROJ_AXON;
+		dispViewPort4Type = displayType.PROJ_OBL;
 	}
 	
 	public BuildObject(int width, int height, String path) {
@@ -80,7 +80,7 @@ public class BuildObject implements GLEventListener {
 		dispViewPort1Type = displayType.PRINCIPAL;
 		dispViewPort2Type = displayType.LATERAL_ESQ;
 		dispViewPort3Type = displayType.PLANTA;
-		dispViewPort4Type = displayType.PROJ_AXON;
+		dispViewPort4Type = displayType.PROJ_OBL;
 	}
 	
 	@Override
@@ -185,12 +185,16 @@ public class BuildObject implements GLEventListener {
 				gl.glRotatef(90, 1, 0, 0);
 				break;
 			case PROJ_OBL: 
-				break;
-			case PROJ_AXON: 
 				gl.glRotatef(-15, 0, 1, 0);
 				gl.glRotatef(15, 1, 0, 0);
 				break;
+			case PROJ_AXON: 
+				gl.glRotatef(-30, 0, 1, 0);
+				gl.glRotatef(30, 1, 0, 0);
+				break;
 			case PROJ_PRESP: 
+				gl.glRotatef(-45, 0, 1, 0);
+				gl.glRotatef(45, 1, 0, 0);
 				break;
 		}
 		
