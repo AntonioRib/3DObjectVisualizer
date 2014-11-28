@@ -1,25 +1,20 @@
 package objects;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
+import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;  // GL constants
+import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
+import static javax.media.opengl.GL.GL_DEPTH_TEST;
+import static javax.media.opengl.GL.GL_FRONT_AND_BACK;
+import static javax.media.opengl.GL.GL_LINES;
+import static javax.media.opengl.GL.GL_POLYGON_OFFSET_FILL;
+import static javax.media.opengl.GL2.GL_POLYGON; // GL2 constants
+import static javax.media.opengl.GL2GL3.GL_FILL;
+import static javax.media.opengl.GL2GL3.GL_LINE;
+import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
+import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.opengl.util.gl2.GLUT;
-
-import static javax.media.opengl.GL.*;  // GL constants
-import static javax.media.opengl.GL2.*; // GL2 constants
-import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
-import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 /**
  * @author M. Próspero (Updated to JOGL2 by Fernando Birra)
@@ -27,12 +22,18 @@ import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 public class BuildObject implements GLEventListener {
 	
-	public enum displayTypes { 
+	public enum sceneType {
+		INDIVIDUAL1, INDIVIDUAL2,
+		INDIVIDUAL3, INDIVIDUAL4,
+		ALL;
+	}
+	
+	public enum displayType { 
 		PRINCIPAL, LATERAL_ESQ, LATERAL_DIR, 
 		PLANTA, PROJ_OBL, PROJ_AXON, PROJ_PRESP;
 	}
 	
-	public enum renderTypes { 
+	public enum renderType { 
 		SOLID, WIREFRAME, WIRESOLID;
 	}
 
@@ -47,12 +48,25 @@ public class BuildObject implements GLEventListener {
 	
 	private float zoomFactor = 1f;
 	
+	private sceneType viewPortType;
+	private renderType rendType;
+	private displayType dispViewPort1Type;
+	private displayType dispViewPort2Type;
+	private displayType dispViewPort3Type;
+	private displayType dispViewPort4Type;
+	
 	public BuildObject(int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.path = null;
 		this.obj = null;
 		this.gl = null;
+		viewPortType = sceneType.ALL;
+		rendType = renderType.WIRESOLID;
+		dispViewPort1Type = displayType.PRINCIPAL;
+		dispViewPort2Type = displayType.LATERAL_ESQ;
+		dispViewPort3Type = displayType.PLANTA;
+		dispViewPort4Type = displayType.PROJ_AXON;
 	}
 	
 	public BuildObject(int width, int height, String path) {
@@ -61,6 +75,12 @@ public class BuildObject implements GLEventListener {
 		this.path = path;
 		this.obj = null;
 		this.gl = null;
+		viewPortType = sceneType.ALL;
+		rendType = renderType.WIRESOLID;
+		dispViewPort1Type = displayType.PRINCIPAL;
+		dispViewPort2Type = displayType.LATERAL_ESQ;
+		dispViewPort3Type = displayType.PLANTA;
+		dispViewPort4Type = displayType.PROJ_AXON;
 	}
 	
 	@Override
@@ -80,19 +100,43 @@ public class BuildObject implements GLEventListener {
 	    	gl.glOrtho (-1.0*aRatio/zoomFactor, 1.0*aRatio/zoomFactor, -1.0/zoomFactor, 1.0/zoomFactor, -2.0, 2.0);
 	    }
 	    
-		gl.glViewport(0, (height/2), (width/2), (height/2));
-		displayScene(displayTypes.PRINCIPAL);
-				
-		gl.glViewport((width/2), (height/2), (width/2), (height/2));
-		displayScene(displayTypes.LATERAL_ESQ);
-		
-		gl.glViewport(0, 0, (width/2), (height/2));
-		displayScene(displayTypes.PLANTA);
-		
-		gl.glViewport((width/2), 0, (width/2), (height/2));
-		displayScene(displayTypes.PROJ_AXON);
+	    displayScene(viewPortType);
 	    
 	    gl.glFlush() ;
+	}
+	
+	private void displayScene(sceneType type){
+		switch (type) {
+		case INDIVIDUAL1:
+			gl.glViewport(0, 0, width, height);
+			buildScene(dispViewPort1Type);
+			break;
+		case INDIVIDUAL2:
+			gl.glViewport(0, 0, width, height);
+			buildScene(dispViewPort2Type);
+			break;
+		case INDIVIDUAL3:
+			gl.glViewport(0, 0, width, height);
+			buildScene(dispViewPort3Type);
+			break;
+		case INDIVIDUAL4:
+			gl.glViewport(0, 0, width, height);
+			buildScene(dispViewPort4Type);
+			break;
+		case ALL:
+			gl.glViewport(0, (height/2), (width/2), (height/2));
+			buildScene(dispViewPort1Type);
+					
+			gl.glViewport((width/2), (height/2), (width/2), (height/2));
+			buildScene(dispViewPort2Type);
+			
+			gl.glViewport(0, 0, (width/2), (height/2));
+			buildScene(dispViewPort3Type);
+			
+			gl.glViewport((width/2), 0, (width/2), (height/2));
+			buildScene(dispViewPort4Type);
+			break;
+		}
 	}
 	
 	private void drawFloor(){
@@ -125,7 +169,7 @@ public class BuildObject implements GLEventListener {
 		}
 	}
 	
-	private void displayScene(displayTypes type) {	
+	private void buildScene(displayType type) {	
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
 		switch (type){
@@ -155,12 +199,12 @@ public class BuildObject implements GLEventListener {
 		drawFloor();
 		if(obj != null){
 			gl.glTranslatef(-(obj.getxCenter()/obj.getMaxAbs()), 0, -1.5f*(obj.getzCenter()/obj.getMaxAbs()));
-			renderScene(gl, renderTypes.WIREFRAME);
+			renderScene(gl, rendType);
 		}
 	}
 	
 	
-	private void renderScene(GL2 gl, renderTypes type){
+	private void renderScene(GL2 gl, renderType type){
 		switch (type){
 			case SOLID:
 				gl.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
@@ -231,6 +275,30 @@ public class BuildObject implements GLEventListener {
 		return path;
 	}
 	
+	public sceneType getViewPortType() {
+		return viewPortType;
+	}
+
+	public renderType getRendType() {
+		return rendType;
+	}
+
+	public displayType getDispViewPort1Type() {
+		return dispViewPort1Type;
+	}
+
+	public displayType getDispViewPort2Type() {
+		return dispViewPort2Type;
+	}
+
+	public displayType getDispViewPort3Type() {
+		return dispViewPort3Type;
+	}
+
+	public displayType getDispViewPort4Type() {
+		return dispViewPort4Type;
+	}
+	
 	/*** SETTERS ***/
 
 	public void setPath(String path) {
@@ -239,6 +307,30 @@ public class BuildObject implements GLEventListener {
 			obj = null;
 		else
 			obj = new Shape(path);
+	}
+
+	public void setViewPortType(sceneType viewPortType) {
+		this.viewPortType = viewPortType;
+	}
+
+	public void setRendType(renderType rendType) {
+		this.rendType = rendType;
+	}
+
+	public void setDispViewPort1Type(displayType dispViewPort1Type) {
+		this.dispViewPort1Type = dispViewPort1Type;
+	}
+
+	public void setDispViewPort2Type(displayType dispViewPort2Type) {
+		this.dispViewPort2Type = dispViewPort2Type;
+	}
+
+	public void setDispViewPort3Type(displayType dispViewPort3Type) {
+		this.dispViewPort3Type = dispViewPort3Type;
+	}
+
+	public void setDispViewPort4Type(displayType dispViewPort4Type) {
+		this.dispViewPort4Type = dispViewPort4Type;
 	}
 	
 }

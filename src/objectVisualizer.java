@@ -1,12 +1,10 @@
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.media.opengl.awt.GLCanvas;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import menus.objectVisualizerFrame;
-import objects.BuildObject;
 
 
 public class objectVisualizer {

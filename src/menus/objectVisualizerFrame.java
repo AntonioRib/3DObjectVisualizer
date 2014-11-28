@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
@@ -16,10 +15,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-
-
-
 
 import objects.BuildObject;
 
@@ -48,15 +43,15 @@ public class objectVisualizerFrame extends JFrame {
 		
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = new JMenu("File");
-		JMenu shapeMenu = new JMenu("Shape");
+		JMenu viewMenu = new JMenu("View");
 		
 		JMenuItem openItem = new JMenuItem("Open");
 		JMenuItem clearItem = new JMenuItem("Clear");
 		
 		fileMenu.add(openItem);
-		shapeMenu.add(clearItem);
+		viewMenu.add(clearItem);
 		menuBar.add(fileMenu);
-		menuBar.add(shapeMenu);
+		menuBar.add(viewMenu);
 		
 		openItem.addActionListener(new ActionListener() {
 			@Override
@@ -96,18 +91,28 @@ public class objectVisualizerFrame extends JFrame {
 				switch(event.getKeyCode()){
 					case KeyEvent.VK_1: case KeyEvent.VK_NUMPAD1:
 						System.out.println("Vai para o 1");
+						bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL1);
+						canvas.repaint();
 						break;
 					case KeyEvent.VK_2: case KeyEvent.VK_NUMPAD2:
 						System.out.println("Vai para o 2");
+						bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL2);
+						canvas.repaint();
 						break;
 					case KeyEvent.VK_3: case KeyEvent.VK_NUMPAD3:
 						System.out.println("Vai para o 3");
+						bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL3);
+						canvas.repaint();
 						break;
 					case KeyEvent.VK_4: case KeyEvent.VK_NUMPAD4:
 						System.out.println("Vai para o 4");
+						bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL4);
+						canvas.repaint();
 						break;
 					case KeyEvent.VK_ESCAPE:
 						System.out.println("Vai para todos");
+						bObj.setViewPortType(BuildObject.sceneType.ALL);
+						canvas.repaint();
 						break;
 					case KeyEvent.VK_PLUS: case KeyEvent.VK_ADD:
 						System.out.println("Zoom in");
