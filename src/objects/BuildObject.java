@@ -239,20 +239,25 @@ public class BuildObject implements GLEventListener {
 				gl.glRotatef(90, 1, 0, 0);
 				break;
 			case PROJ_OBL: 
-				gl.glRotatef(-15, 0, 1, 0);
-				gl.glRotatef(15, 1, 0, 0);
+				double mObl[] = {1, 				   0, 			0,			 0,
+								 0,					   1, 			0, 			 0,
+								 -Math.cos(Math.PI/4), -Math.sin(Math.PI/4), 1,  0,
+								 0, 				   0, 			0, 			 1};
+				gl.glMultMatrixd(mObl, 0);
 				break;
 			case PROJ_AXON: 
-				gl.glRotatef(-30, 0, 1, 0);
-				gl.glRotatef(30, 1, 0, 0);
+				float[] mAxon = {};
 				break;
 			case PROJ_PRESP: 
-				gl.glRotatef(-45, 0, 1, 0);
-				gl.glRotatef(45, 1, 0, 0);
+				double[] mPresp = {1, 0, 0, 0,
+						 		  0, 1, 0, 0,
+						 		  0, 0, 1, 0,
+						 		  0, 0, -1f/10, 1 };
+				gl.glMultMatrixd(mPresp, 0);
 				break;
 		}
 		
-		if(obj != null)
+		if(obj != null)		
 			gl.glTranslatef(0, -(obj.getyCenter()/obj.getMaxAbs()), 0);	
 		drawFloor();
 		if(applyTexture)
