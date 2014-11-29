@@ -14,6 +14,7 @@ public class Shape {
 	private final static String DEFAULT_OBJ_PATH = "objects/cube.obj";
 
 	private Vector<Point3D> points = new Vector<Point3D>();
+	private Vector<Point3D> texturePoints = new Vector<Point3D>();
 	private Vector<Face> faces = new Vector<Face>();
 	
 	private float xMin = Float.MAX_VALUE, xMax = Float.MIN_VALUE, 
@@ -42,6 +43,10 @@ public class Shape {
 
 	public Vector<Point3D> getPoints() {
 		return points;
+	}
+	
+	public Vector<Point3D> getTexturePoints() {
+		return texturePoints;
 	}
 
 	public Vector<Face> getFaces() {
@@ -84,9 +89,6 @@ public class Shape {
 		return (zMax+zMin)/2;
 	}
 
-	
-	
-	
 	public float getMaxAbs() {
 		return maxAbs;
 	}
@@ -125,14 +127,19 @@ public class Shape {
 				points.add(p);
 				updateCoordinates(p);
 			} else if (tokens[0].equals(OBJ_VERTEX_TEXTURE)) {
-				// parse texture coordinates
+				Point3D p = null;
+				if(tokens.length == 3)
+					p = new Point3D(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
+				else if(tokens.length == 4)
+					p = new Point3D(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]), Float.parseFloat(tokens[3]));
+				texturePoints.add(p);
 			} else if (tokens[0].equals(OBJ_FACE)) {
 				for (int i = 1; i < tokens.length; i++) {
+					String[] insideTok = tokens[i].split("[/ ]+");
 					faces.add(new Face());
-					faces.get(nFaces)
-							.addPoint(
-									points.get(Integer.parseInt(tokens[i]
-											.split("[/]")[0]) - 1));
+					faces.get(nFaces).addPoint(points.get(Integer.parseInt(insideTok[0]) - 1));
+					if(insideTok.length == 2)
+						faces.get(nFaces).addTexturePoint(texturePoints.get(Integer.parseInt(insideTok[1]) - 1));
 				}
 				nFaces++;
 			}

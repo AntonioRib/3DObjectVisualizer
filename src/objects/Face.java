@@ -5,10 +5,12 @@ import java.util.Vector;
 public class Face {
 
 	 private Vector<Point3D> points;
+	 private Vector<Point3D> texturePoints;
 	 private int nPoints;
 	 
 	 public Face(){
 		 points = new Vector<Point3D>();
+		 texturePoints = new Vector<Point3D>();
 	 }
 	 
 	 /*** METHODS ***/
@@ -23,10 +25,18 @@ public class Face {
 		 nPoints++;
 	 }
 	 
+	 public void addTexturePoint(Point3D p){
+		 texturePoints.add(p);
+	 }
+	 
 	 /*** GETTERS ***/
 	 
 	 public Vector<Point3D> getPoints(){
 		 return points;
+	 }
+	 
+	 public Vector<Point3D> getTexturePoints(){
+		 return texturePoints;
 	 }
 	 
 	 public int getNumberPoints(){

@@ -82,9 +82,11 @@ public class objectVisualizerFrame extends JFrame {
 		viewPortSubMenu.add(viewPortPrespItem);
 
 		JMenuItem openItem = new JMenuItem("Open");
+		JMenuItem loadTextItem = new JMenuItem("Load Texture");
 		JMenuItem clearItem = new JMenuItem("Clear");
 		
 		fileMenu.add(openItem);
+		fileMenu.add(loadTextItem);
 
 		viewMenu.add(clearItem);
 		viewMenu.addSeparator();
@@ -110,6 +112,20 @@ public class objectVisualizerFrame extends JFrame {
 					bObj.setPath(file.getPath());
 					canvas.repaint();
 					loaded = true;
+					System.out.println(file.getPath());
+				}
+			}
+		});
+		
+		loadTextItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser openFile = new JFileChooser(System.getProperty("user.dir"));
+				int response = openFile.showOpenDialog(null);
+				if (response == JFileChooser.APPROVE_OPTION) {
+					File file = openFile.getSelectedFile();
+					bObj.setTextPath(file.getPath());
+					canvas.repaint();
 					System.out.println(file.getPath());
 				}
 			}
