@@ -105,6 +105,7 @@ public class Shape {
 
 		int lineCount = 0;
 		int nFaces = 0;
+		int vt = 0;
 
 		String line = null;
 		while (true) {
@@ -127,12 +128,9 @@ public class Shape {
 				points.add(p);
 				updateCoordinates(p);
 			} else if (tokens[0].equals(OBJ_VERTEX_TEXTURE)) {
-				Point3D p = null;
-				if(tokens.length == 3)
-					p = new Point3D(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
-				else if(tokens.length == 4)
-					p = new Point3D(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]), Float.parseFloat(tokens[3]));
+				Point3D p = new Point3D(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 				texturePoints.add(p);
+				vt++;
 			} else if (tokens[0].equals(OBJ_FACE)) {
 				for (int i = 1; i < tokens.length; i++) {
 					String[] insideTok = tokens[i].split("[/ ]+");
@@ -150,6 +148,7 @@ public class Shape {
 
 		System.out.println("FaceNumber" + nFaces);
 		System.err.println("Loaded " + lineCount + " lines");
+		System.err.println("vt Number " + vt);
 	}
 	
 	private void updateCoordinates(Point3D p){

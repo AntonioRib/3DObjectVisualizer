@@ -20,14 +20,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLException;
-import javax.media.opengl.glu.GLU;
-
-import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.TextureIO;
 
 /**
  * @author M. Próspero (Updated to JOGL2 by Fernando Birra)
@@ -89,19 +86,8 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	public BuildObject(int width, int height, String path) {
-		this.width = width;
-		this.height = height;
+		this(width, height);
 		this.path = path;
-		this.obj = null;
-		this.gl = null;
-		this.textPath = null;
-		applyTexture = false;
-		viewPortType = sceneType.ALL;
-		rendType = renderType.WIRESOLID;
-		dispViewPort1Type = displayType.PRINCIPAL;
-		dispViewPort2Type = displayType.LATERAL_ESQ;
-		dispViewPort3Type = displayType.PLANTA;
-		dispViewPort4Type = displayType.PROJ_OBL;
 	}
 	
 	@Override
@@ -117,6 +103,10 @@ public class BuildObject implements GLEventListener {
 	    } else {
 	    	gl.glOrtho (-1.0*aRatio/zoomFactor, 1.0*aRatio/zoomFactor, -1.0/zoomFactor, 1.0/zoomFactor, -2.0, 2.0);
 	    }
+	    
+		if(applyTexture && textPath != null)
+			applyTexture();
+	    
 	    displayScene(viewPortType);
 	    
 	    gl.glFlush() ;
@@ -177,8 +167,10 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	private void drawObj(){
-		gl.glBindTexture(gl.GL_TEXTURE_2D, textureBuf[0]);
-		gl.glEnable(gl.GL_TEXTURE_2D);
+		if(applyTexture && textPath != null){
+			gl.glBindTexture(GL.GL_TEXTURE_2D, textureBuf[0]);
+			gl.glEnable(GL.GL_TEXTURE_2D);
+		}
 		for(Face f : obj.getFaces()){
 			gl.glBegin(GL_POLYGON);
 			for(int i=0; i<f.getPoints().size(); i++){
@@ -189,9 +181,10 @@ public class BuildObject implements GLEventListener {
 				}
 				gl.glVertex3f(p.getX()/obj.getMaxAbs(), p.getY()/obj.getMaxAbs(), p.getZ()/obj.getMaxAbs());
 			}
-			gl.glDisable(gl.GL_TEXTURE_2D);
 			gl.glEnd();
 		}
+		if(applyTexture && textPath != null)
+			gl.glDisable(GL.GL_TEXTURE_2D);
 	}
 	
 	private void applyTexture(){   
@@ -208,14 +201,15 @@ public class BuildObject implements GLEventListener {
 		case DataBuffer.TYPE_BYTE:
 			DataBufferByte bb = (DataBufferByte) buf;
 			byte im[] = bb.getData();
-			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP);
-			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP);
-			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST);
-			gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST);
 			
-			gl.glTexImage2D( gl.GL_TEXTURE_2D, 0, gl.GL_RGB, width, height,
-					0, gl.GL_BGR, gl.GL_UNSIGNED_BYTE, ByteBuffer.wrap(im));
-			gl.glBindTexture(gl.GL_TEXTURE_2D, textureBuf[0]);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+			
+			gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, width, height,
+					0, GL2GL3.GL_BGR, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap(im));
+			gl.glBindTexture(GL.GL_TEXTURE_2D, textureBuf[0]);
 			break;
 		case DataBuffer.TYPE_UNDEFINED:
 			 	 // Report error here!
@@ -239,10 +233,10 @@ public class BuildObject implements GLEventListener {
 				gl.glRotatef(90, 1, 0, 0);
 				break;
 			case PROJ_OBL: 
-				double mObl[] = {1, 				   0, 			0,			 0,
-								 0,					   1, 			0, 			 0,
+				double mObl[] = {1, 0, 0, 0,
+								 0,	1, 0, 0,
 								 -Math.cos(Math.PI/4), -Math.sin(Math.PI/4), 1,  0,
-								 0, 				   0, 			0, 			 1};
+								 0, 0, 0, 1};
 				gl.glMultMatrixd(mObl, 0);
 				break;
 			case PROJ_AXON: 
@@ -250,9 +244,9 @@ public class BuildObject implements GLEventListener {
 				break;
 			case PROJ_PRESP: 
 				double[] mPresp = {1, 0, 0, 0,
-						 		  0, 1, 0, 0,
-						 		  0, 0, 1, 0,
-						 		  0, 0, -1f/10, 1 };
+						 		   0, 1, 0, 0,
+						 		   0, 0, 1, 0,
+						 		   0, 0, -1f/10, 1 };
 				gl.glMultMatrixd(mPresp, 0);
 				break;
 		}
@@ -260,8 +254,7 @@ public class BuildObject implements GLEventListener {
 		if(obj != null)		
 			gl.glTranslatef(0, -(obj.getyCenter()/obj.getMaxAbs()), 0);	
 		drawFloor();
-		if(applyTexture)
-			applyTexture();
+
 		if(obj != null){
 			gl.glTranslatef(-(obj.getxCenter()/obj.getMaxAbs()), 0, -(obj.getzCenter()/obj.getMaxAbs()));
 			renderScene(gl, rendType);
@@ -408,10 +401,6 @@ public class BuildObject implements GLEventListener {
 	
 	public void setTextPath(String textPath) {
 		this.textPath = textPath;
-		if(textPath == null)
-			turnOffApplyTexture();
-		else
-			turnOnApplyTexture();
 	}
 
 	public void turnOnApplyTexture() {

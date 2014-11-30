@@ -11,6 +11,7 @@ import java.io.File;
 import javax.media.opengl.awt.GLCanvas;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -54,6 +55,8 @@ public class objectVisualizerFrame extends JFrame {
 		JRadioButtonMenuItem renderWireItem = new JRadioButtonMenuItem("Wireframe");
 		JRadioButtonMenuItem renderSolidWireItem = new JRadioButtonMenuItem("Solid + Wireframe");
 		
+		final JCheckBoxMenuItem textItem = new JCheckBoxMenuItem("Use Texture");
+		
 		renderGroup.add(renderSolidItem);
 		renderSubMenu.add(renderSolidItem);
 		
@@ -93,6 +96,8 @@ public class objectVisualizerFrame extends JFrame {
 		viewMenu.add(renderSubMenu);
 		viewMenu.addSeparator();
 		viewMenu.add(viewPortSubMenu);
+		viewMenu.addSeparator();
+		viewMenu.add(textItem);
 
 		menuBar.add(fileMenu);
 		menuBar.add(viewMenu);
@@ -188,6 +193,17 @@ public class objectVisualizerFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				bObj.setDispViewPort4Type(BuildObject.displayType.PROJ_PRESP);
 				canvas.repaint();
+			}
+		});
+		
+		textItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(textItem.isSelected())
+					bObj.turnOnApplyTexture();
+				else
+					bObj.turnOffApplyTexture();
+				
 			}
 		});
 
