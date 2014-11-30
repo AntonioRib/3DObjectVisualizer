@@ -66,9 +66,15 @@ public class BuildObject implements GLEventListener {
 	private displayType dispViewPort4Type;
 	
 	private int[] textureBuf = new int[1];
-	
 	private boolean applyTexture;
 	
+	private int prespVar = 10;
+	private double oblVar = 45;
+	private int principalRotHorVar = 0;
+	private int principalRotVerVar = 0;
+	private int axonAAngle = 42;
+	private int axonBAngle = 7;
+
 	public BuildObject(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -222,6 +228,8 @@ public class BuildObject implements GLEventListener {
 		gl.glLoadIdentity();
 		switch (type){
 			case PRINCIPAL:
+			gl.glRotatef(principalRotHorVar, 0, 1, 0);
+			gl.glRotatef(principalRotVerVar, 1, 0, 0);
 				break;
 			case LATERAL_ESQ:
 				gl.glRotatef(90, 0, 1, 0);
@@ -233,20 +241,24 @@ public class BuildObject implements GLEventListener {
 				gl.glRotatef(90, 1, 0, 0);
 				break;
 			case PROJ_OBL: 
-				double mObl[] = {1, 0, 0, 0,
-								 0,	1, 0, 0,
-								 -Math.cos(Math.PI/4), -Math.sin(Math.PI/4), 1,  0,
-								 0, 0, 0, 1};
+			double mObl[] = {1, 0, 0, 0,
+							 0,	1, 0, 0,
+							 -Math.cos((oblVar*Math.PI)/180), -Math.sin((oblVar*Math.PI)/180), 1,  0,
+							 0, 0, 0, 1};
 				gl.glMultMatrixd(mObl, 0);
 				break;
 			case PROJ_AXON: 
-				float[] mAxon = {};
+
+				double teta = Math.atan(Math.sqrt(Math.tan(axonAAngle*Math.PI/180)/(Math.tan(axonBAngle*Math.PI/180)))-(Math.PI/2));
+				double fi = Math.asin(Math.sqrt((Math.tan(axonAAngle*Math.PI/180))*(Math.tan(axonBAngle*Math.PI/180))));
+				gl.glRotated(fi*180/Math.PI, 1, 0, 0);
+				gl.glRotated(teta*180/Math.PI, 0, 1, 0);
 				break;
 			case PROJ_PRESP: 
-				double[] mPresp = {1, 0, 0, 0,
-						 		   0, 1, 0, 0,
-						 		   0, 0, 1, 0,
-						 		   0, 0, -1f/10, 1 };
+			double[] mPresp = {1, 0, 0, 0,
+						 	   0, 1, 0, 0,
+							   0, 0, 1, -1f/prespVar,
+							   0, 0, 0, 1 };
 				gl.glMultMatrixd(mPresp, 0);
 				break;
 		}
@@ -365,6 +377,30 @@ public class BuildObject implements GLEventListener {
 		return applyTexture;
 	}
 	
+	public double getOblVar() {
+		return oblVar;
+	}
+	
+	public int getPrespVar() {
+		return prespVar;
+	}
+	
+	public int getPrincipalRotHotVar() {
+		return principalRotHorVar;
+	}
+	
+	public int getPrincipalRotVerVar() {
+		return principalRotVerVar;
+	}
+
+	public int getAxonBAngle() {
+		return axonBAngle;
+	}
+	
+	public int getAxonAAngle() {
+		return axonAAngle;
+	}
+	
 	/*** SETTERS ***/
 
 	public void setPath(String path) {
@@ -410,5 +446,80 @@ public class BuildObject implements GLEventListener {
 	public void turnOffApplyTexture() {
 		this.applyTexture = false;
 	}
+
+	public void increasePrespVar() {
+		this.prespVar+=10;
+	}
 	
+	public void decreasePrespVar() {
+		if(prespVar-10 > 0)
+			this.prespVar-=10;
+	}
+
+	public void increaseOblVar() {
+		this.oblVar += 5;
+	}
+	
+	public void decreaseOblVar() {
+		if(oblVar-5 > 0)
+			this.oblVar -= 5;
+	}
+
+	public void increasePrincipalRotHorVar() {
+		this.principalRotHorVar += 5;
+	}
+	
+	public void decreasePrincipalRotHorVar() {
+		this.principalRotHorVar -= 5;
+	}
+	
+	public void increasePrincipalRotVerVar() {
+		this.principalRotVerVar += 5;
+	}
+	
+	public void decreasePrincipalRotVerVar() {
+		this.principalRotVerVar -= 5;
+	}
+	
+	public void increaseAxonAAngle() {
+		this.axonAAngle += 5;
+	}
+	
+	public void decreaseAxonAAngle() {
+		if(axonAAngle-5 > 0)
+			this.axonAAngle -= 5;
+	}
+	
+	public void increaseAxonBAngle() {
+		this.axonBAngle += 5;
+	}
+	
+	public void decreaseAxonBAngle() {
+		if(axonBAngle-5 > 0)
+			this.axonBAngle -= 5;
+	}
+	
+	public void resetPrespVar(){
+		prespVar = 10;
+	}
+	
+	public void resetOblVar(){
+		oblVar = 45;
+	}
+	
+	public void resetPrincipalRotHorVar() {
+		this.principalRotHorVar = 0;
+	}
+	
+	public void resetPrincipalRotVerVar() {
+		this.principalRotVerVar = 0;
+	}
+	
+	public void resetAll(){
+		resetOblVar();
+		resetPrespVar();
+		resetPrincipalRotHorVar();
+		resetPrincipalRotVerVar();
+	}
+
 }

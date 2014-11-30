@@ -1,9 +1,13 @@
 package menus;
 
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
@@ -19,6 +23,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.jogamp.newt.event.MouseAdapter;
 
 import objects.BuildObject;
 
@@ -87,11 +93,14 @@ public class objectVisualizerFrame extends JFrame {
 		JMenuItem openItem = new JMenuItem("Open");
 		JMenuItem loadTextItem = new JMenuItem("Load Texture");
 		JMenuItem clearItem = new JMenuItem("Clear");
+		JMenuItem resetPresItem = new JMenuItem("Reset Prespectives");
 		
 		fileMenu.add(openItem);
 		fileMenu.add(loadTextItem);
 
 		viewMenu.add(clearItem);
+		viewMenu.addSeparator();
+		viewMenu.add(resetPresItem);
 		viewMenu.addSeparator();
 		viewMenu.add(renderSubMenu);
 		viewMenu.addSeparator();
@@ -203,7 +212,15 @@ public class objectVisualizerFrame extends JFrame {
 					bObj.turnOnApplyTexture();
 				else
 					bObj.turnOffApplyTexture();
-				
+				canvas.repaint();
+			}
+		});
+		
+		resetPresItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				bObj.resetAll();
+				canvas.repaint();
 			}
 		});
 
@@ -261,9 +278,43 @@ public class objectVisualizerFrame extends JFrame {
 						loaded = false;
 					}
 					break;
-				}
+				case KeyEvent.VK_RIGHT:
+					if(event.isShiftDown()){
+						bObj.increaseOblVar();
+						bObj.increasePrespVar();
+					} else if(event.isControlDown()) {
+						bObj.decreaseAxonAAngle();
+					} else
+						bObj.increasePrincipalRotHorVar();
+					canvas.repaint();
+					break;
+				case KeyEvent.VK_LEFT:
+					if(event.isShiftDown()) {
+						bObj.decreaseOblVar();
+						bObj.decreasePrespVar();
+					} else if(event.isControlDown()) {
+						bObj.increaseAxonAAngle();
+					} else 
+						bObj.decreasePrincipalRotHorVar();
+					canvas.repaint();
+					break;
+				case KeyEvent.VK_UP:
+					if(event.isControlDown()) {
+						bObj.increaseAxonBAngle();
+					} else
+						bObj.increasePrincipalRotVerVar();
+					canvas.repaint();
+					break;
+				case KeyEvent.VK_DOWN:
+					if(event.isControlDown()) {
+						bObj.decreaseAxonBAngle();
+					} else
+						bObj.decreasePrincipalRotVerVar();
+					canvas.repaint();
+					break;
 			}
-		});
+		}
+	});
 
 		canvas.addMouseWheelListener(new MouseWheelListener() {
 

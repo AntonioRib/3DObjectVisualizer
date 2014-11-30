@@ -133,10 +133,10 @@ public class Shape {
 				vt++;
 			} else if (tokens[0].equals(OBJ_FACE)) {
 				for (int i = 1; i < tokens.length; i++) {
-					String[] insideTok = tokens[i].split("[/ ]+");
+					String[] insideTok = tokens[i].split("[/ ]");
 					faces.add(new Face());
 					faces.get(nFaces).addPoint(points.get(Integer.parseInt(insideTok[0]) - 1));
-					if(insideTok.length == 2)
+					if(insideTok.length == 2 && !insideTok[1].equalsIgnoreCase("/"))
 						faces.get(nFaces).addTexturePoint(texturePoints.get(Integer.parseInt(insideTok[1]) - 1));
 				}
 				nFaces++;
