@@ -9,7 +9,6 @@ import menus.objectVisualizerFrame;
 
 public class objectVisualizer {
 
-	//TODO ISTO NÃO VAI SER AQUI.
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

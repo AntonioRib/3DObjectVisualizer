@@ -26,6 +26,8 @@ import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
+import com.jogamp.opengl.util.gl2.GLUT;
+
 /**
  * @author M. Próspero (Updated to JOGL2 by Fernando Birra)
  */
@@ -172,6 +174,10 @@ public class BuildObject implements GLEventListener {
 		gl.glEnd();
 	}
 	
+	private void drawBoundingBox(){
+		new GLUT().glutWireCube(1);
+	}
+	
 	private void drawObj(){
 		if(applyTexture && textPath != null){
 			gl.glEnable(GL.GL_TEXTURE_2D);
@@ -186,6 +192,7 @@ public class BuildObject implements GLEventListener {
 					gl.glTexCoord2d(tp.getX(), tp.getY());
 				}
 				gl.glVertex3f(p.getX()/obj.getMaxAbs(), p.getY()/obj.getMaxAbs(), p.getZ()/obj.getMaxAbs());
+				System.out.println("X: "+p.getX()/obj.getMaxAbs()+" Y: "+ p.getY()/obj.getMaxAbs()+" Z: "+p.getZ()/obj.getMaxAbs());
 			}
 			gl.glEnd();
 		}
@@ -208,8 +215,6 @@ public class BuildObject implements GLEventListener {
 			DataBufferByte bb = (DataBufferByte) buf;
 			byte im[] = bb.getData();
 			
-			//gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
-			//gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
 			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
 			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
 			
@@ -261,9 +266,10 @@ public class BuildObject implements GLEventListener {
 				gl.glMultMatrixd(mPresp, 0);
 				break;
 		}
-		
-		if(obj != null)		
+		if(obj != null)	{	
+			//drawBoundingBox();
 			gl.glTranslatef(0, -(obj.getyCenter()/obj.getMaxAbs()), 0);	
+		}
 		drawFloor();
 
 		if(obj != null){
@@ -404,10 +410,13 @@ public class BuildObject implements GLEventListener {
 
 	public void setPath(String path) {
 		this.path = path;
-		if(path == null)
+		if(path == null) {
 			obj = null;
-		else
+		} else {
 			obj = new Shape(path);
+		}
+		textureBuf = new int[1];
+		textPath = null;
 	}
 
 	public void setViewPortType(sceneType viewPortType) {
