@@ -174,8 +174,8 @@ public class BuildObject implements GLEventListener {
 	
 	private void drawObj(){
 		if(applyTexture && textPath != null){
-			gl.glBindTexture(GL.GL_TEXTURE_2D, textureBuf[0]);
 			gl.glEnable(GL.GL_TEXTURE_2D);
+			gl.glBindTexture(GL.GL_TEXTURE_2D, textureBuf[0]);
 		}
 		for(Face f : obj.getFaces()){
 			gl.glBegin(GL_POLYGON);
@@ -208,14 +208,14 @@ public class BuildObject implements GLEventListener {
 			DataBufferByte bb = (DataBufferByte) buf;
 			byte im[] = bb.getData();
 			
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+			//gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP);
+			//gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
 			
 			gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, width, height,
 					0, GL2GL3.GL_BGR, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap(im));
-			gl.glBindTexture(GL.GL_TEXTURE_2D, textureBuf[0]);
+			
 			break;
 		case DataBuffer.TYPE_UNDEFINED:
 			 	 // Report error here!
@@ -228,8 +228,8 @@ public class BuildObject implements GLEventListener {
 		gl.glLoadIdentity();
 		switch (type){
 			case PRINCIPAL:
-			gl.glRotatef(principalRotHorVar, 0, 1, 0);
-			gl.glRotatef(principalRotVerVar, 1, 0, 0);
+				gl.glRotatef(principalRotHorVar, 0, 1, 0);
+				gl.glRotatef(principalRotVerVar, 1, 0, 0);
 				break;
 			case LATERAL_ESQ:
 				gl.glRotatef(90, 0, 1, 0);
@@ -248,7 +248,6 @@ public class BuildObject implements GLEventListener {
 				gl.glMultMatrixd(mObl, 0);
 				break;
 			case PROJ_AXON: 
-
 				double teta = Math.atan(Math.sqrt(Math.tan(axonAAngle*Math.PI/180)/(Math.tan(axonBAngle*Math.PI/180)))-(Math.PI/2));
 				double fi = Math.asin(Math.sqrt((Math.tan(axonAAngle*Math.PI/180))*(Math.tan(axonBAngle*Math.PI/180))));
 				gl.glRotated(fi*180/Math.PI, 1, 0, 0);
@@ -482,15 +481,19 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	public void increaseAxonAAngle() {
+		if(this.axonAAngle+5 == 90)
+			increaseAxonAAngle();
 		this.axonAAngle += 5;
 	}
 	
 	public void decreaseAxonAAngle() {
-		if(axonAAngle-5 > 0)
+		if(axonAAngle-5 > 0 || this.axonAAngle+5 == 45)
 			this.axonAAngle -= 5;
 	}
 	
 	public void increaseAxonBAngle() {
+		if(this.axonBAngle+5 == 90 || this.axonBAngle+5 == 45)
+			increaseAxonBAngle();
 		this.axonBAngle += 5;
 	}
 	

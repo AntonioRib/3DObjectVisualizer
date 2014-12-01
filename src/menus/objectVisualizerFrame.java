@@ -227,7 +227,7 @@ public class objectVisualizerFrame extends JFrame {
 		this.setJMenuBar(menuBar);
 
 		canvas.addKeyListener(new KeyAdapter() {
-			public void keyReleased(KeyEvent event) {
+			public void keyPressed(KeyEvent event) {
 				switch (event.getKeyCode()) {
 				case KeyEvent.VK_1:
 				case KeyEvent.VK_NUMPAD1:
