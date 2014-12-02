@@ -69,6 +69,7 @@ public class BuildObject implements GLEventListener {
 	
 	private int[] textureBuf = new int[1];
 	private boolean applyTexture;
+	private boolean useBoundingBox;
 	
 	private int prespVar = 10;
 	private double oblVar = 45;
@@ -85,6 +86,7 @@ public class BuildObject implements GLEventListener {
 		this.gl = null;
 		this.textPath = null;
 		applyTexture = false;
+		this.useBoundingBox = false;
 		viewPortType = sceneType.ALL;
 		rendType = renderType.WIRESOLID;
 		dispViewPort1Type = displayType.PRINCIPAL;
@@ -175,7 +177,7 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	private void drawBoundingBox(){
-		new GLUT().glutWireCube(1);
+		new GLUT().glutWireCube(2);
 	}
 	
 	private void drawObj(){
@@ -191,8 +193,7 @@ public class BuildObject implements GLEventListener {
 					Point3D tp = f.getTexturePoints().get(i);
 					gl.glTexCoord2d(tp.getX(), tp.getY());
 				}
-				gl.glVertex3f(p.getX()/obj.getMaxAbs(), p.getY()/obj.getMaxAbs(), p.getZ()/obj.getMaxAbs());
-				System.out.println("X: "+p.getX()/obj.getMaxAbs()+" Y: "+ p.getY()/obj.getMaxAbs()+" Z: "+p.getZ()/obj.getMaxAbs());
+				gl.glVertex3f(p.getX(), p.getY(), p.getZ());
 			}
 			gl.glEnd();
 		}
@@ -267,12 +268,14 @@ public class BuildObject implements GLEventListener {
 				break;
 		}
 		if(obj != null)	{	
-			//drawBoundingBox();
+			if(isUseBoundingBox())
+				drawBoundingBox();
 			gl.glTranslatef(0, -(obj.getyCenter()/obj.getMaxAbs()), 0);	
 		}
 		drawFloor();
 
 		if(obj != null){
+			gl.glScalef(1/obj.getMaxAbs(), 1/obj.getMaxAbs(), 1/obj.getMaxAbs());
 			gl.glTranslatef(-(obj.getxCenter()/obj.getMaxAbs()), 0, -(obj.getzCenter()/obj.getMaxAbs()));
 			renderScene(gl, rendType);
 		}
@@ -406,6 +409,10 @@ public class BuildObject implements GLEventListener {
 		return axonAAngle;
 	}
 	
+	public boolean isUseBoundingBox() {
+		return useBoundingBox;
+	}
+	
 	/*** SETTERS ***/
 
 	public void setPath(String path) {
@@ -490,24 +497,26 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	public void increaseAxonAAngle() {
-		if(this.axonAAngle+5 == 90)
-			increaseAxonAAngle();
-		this.axonAAngle += 5;
+		System.out.println("A: "+ (axonAAngle));
+		if(axonAAngle+5<87)
+			this.axonAAngle += 5;
 	}
 	
 	public void decreaseAxonAAngle() {
-		if(axonAAngle-5 > 0 || this.axonAAngle+5 == 45)
+		System.out.println("A: "+ (axonAAngle));
+		if(axonAAngle-5>0)
 			this.axonAAngle -= 5;
 	}
 	
 	public void increaseAxonBAngle() {
-		if(this.axonBAngle+5 == 90 || this.axonBAngle+5 == 45)
-			increaseAxonBAngle();
-		this.axonBAngle += 5;
+		System.out.println("B: "+ (axonBAngle+5));
+		if(axonBAngle+5<20)
+			this.axonBAngle += 5;
 	}
 	
 	public void decreaseAxonBAngle() {
-		if(axonBAngle-5 > 0)
+		System.out.println("B: "+ (axonBAngle-5));
+		if(axonBAngle-5>0)
 			this.axonBAngle -= 5;
 	}
 	
@@ -534,4 +543,11 @@ public class BuildObject implements GLEventListener {
 		resetPrincipalRotVerVar();
 	}
 
+	public void turnOnBoundingBox() {
+		this.useBoundingBox = true;
+	}
+
+	public void turnOffBoundingBox() {
+		this.useBoundingBox = false;
+	}
 }

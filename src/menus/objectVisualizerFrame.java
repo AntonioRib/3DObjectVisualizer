@@ -62,6 +62,7 @@ public class objectVisualizerFrame extends JFrame {
 		JRadioButtonMenuItem renderSolidWireItem = new JRadioButtonMenuItem("Solid + Wireframe");
 		
 		final JCheckBoxMenuItem textItem = new JCheckBoxMenuItem("Use Texture");
+		final JCheckBoxMenuItem bbItem = new JCheckBoxMenuItem("Use BoundingBox");
 		
 		renderGroup.add(renderSolidItem);
 		renderSubMenu.add(renderSolidItem);
@@ -99,14 +100,13 @@ public class objectVisualizerFrame extends JFrame {
 		fileMenu.add(loadTextItem);
 
 		viewMenu.add(clearItem);
-		viewMenu.addSeparator();
 		viewMenu.add(resetPresItem);
 		viewMenu.addSeparator();
 		viewMenu.add(renderSubMenu);
-		viewMenu.addSeparator();
 		viewMenu.add(viewPortSubMenu);
 		viewMenu.addSeparator();
 		viewMenu.add(textItem);
+		viewMenu.add(bbItem);
 
 		menuBar.add(fileMenu);
 		menuBar.add(viewMenu);
@@ -216,6 +216,17 @@ public class objectVisualizerFrame extends JFrame {
 			}
 		});
 		
+		bbItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(bbItem.isSelected())
+					bObj.turnOnBoundingBox();
+				else
+					bObj.turnOffBoundingBox();
+				canvas.repaint();
+			}
+		});
+		
 		resetPresItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -231,48 +242,40 @@ public class objectVisualizerFrame extends JFrame {
 				switch (event.getKeyCode()) {
 				case KeyEvent.VK_1:
 				case KeyEvent.VK_NUMPAD1:
-					System.out.println("Vai para o 1");
 					bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL1);
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_2:
 				case KeyEvent.VK_NUMPAD2:
-					System.out.println("Vai para o 2");
 					bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL2);
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_3:
 				case KeyEvent.VK_NUMPAD3:
-					System.out.println("Vai para o 3");
 					bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL3);
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_4:
 				case KeyEvent.VK_NUMPAD4:
-					System.out.println("Vai para o 4");
 					bObj.setViewPortType(BuildObject.sceneType.INDIVIDUAL4);
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_ESCAPE:
-					System.out.println("Vai para todos");
 					bObj.setViewPortType(BuildObject.sceneType.ALL);
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_PLUS:
 				case KeyEvent.VK_ADD:
-					System.out.println("Zoom in");
 					bObj.zoomIn();
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_MINUS:
 				case KeyEvent.VK_SUBTRACT:
-					System.out.println("Zoom out");
 					bObj.zoomOut();
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_PERIOD:
 					if (loaded) {
-						System.out.println("Erased");
 						bObj.setPath(null);
 						canvas.repaint();
 						loaded = false;
@@ -321,11 +324,9 @@ public class objectVisualizerFrame extends JFrame {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if (e.getWheelRotation() < 0) {
-					System.out.println("Zoom in");
 					bObj.zoomIn();
 					canvas.repaint();
 				} else {
-					System.out.println("Zoom out");
 					bObj.zoomOut();
 					canvas.repaint();
 				}
