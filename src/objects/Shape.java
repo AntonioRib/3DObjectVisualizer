@@ -17,11 +17,11 @@ public class Shape {
 	private Vector<Point3D> texturePoints = new Vector<Point3D>();
 	private Vector<Face> faces = new Vector<Face>();
 	
-	private float xMin = Float.MAX_VALUE, xMax = Float.MIN_VALUE, 
-					yMin = Float.MAX_VALUE, yMax = Float.MIN_VALUE, 
-					 zMin = Float.MAX_VALUE, zMax = Float.MIN_VALUE;
+	private float xMin = Float.MAX_VALUE, xMax = -Float.MAX_VALUE, 
+					yMin = Float.MAX_VALUE, yMax = -Float.MAX_VALUE, 
+					 zMin = Float.MAX_VALUE, zMax = -Float.MAX_VALUE;
 	
-	private float maxAbs = Float.MIN_VALUE; 
+	private float maxAbs = -Float.MAX_VALUE; 
 	
 	private int nFaces = 0, nEdges = 0;  
 

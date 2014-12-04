@@ -62,6 +62,7 @@ public class objectVisualizerFrame extends JFrame {
 		JRadioButtonMenuItem renderSolidWireItem = new JRadioButtonMenuItem("Solid + Wireframe");
 		
 		final JCheckBoxMenuItem textItem = new JCheckBoxMenuItem("Use Texture");
+		textItem.setEnabled(false);
 		final JCheckBoxMenuItem bbItem = new JCheckBoxMenuItem("Use BoundingBox");
 		
 		renderGroup.add(renderSolidItem);
@@ -127,6 +128,8 @@ public class objectVisualizerFrame extends JFrame {
 					canvas.repaint();
 					loaded = true;
 					System.out.println(file.getPath());
+					textItem.setEnabled(false);
+					textItem.setSelected(false);
 				}
 			}
 		});
@@ -141,6 +144,8 @@ public class objectVisualizerFrame extends JFrame {
 					bObj.setTextPath(file.getPath());
 					canvas.repaint();
 					System.out.println(file.getPath());
+					if(bObj.getObj() != null)
+						textItem.setEnabled(true);
 				}
 			}
 		});
@@ -161,6 +166,8 @@ public class objectVisualizerFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				bObj.setRendType(BuildObject.renderType.SOLID);
+				if(bObj.getObj() != null)
+					textItem.setEnabled(true);
 				canvas.repaint();
 			}
 		});
@@ -169,6 +176,8 @@ public class objectVisualizerFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				bObj.setRendType(BuildObject.renderType.WIREFRAME);
+				textItem.setEnabled(false);
+				textItem.setSelected(false);
 				canvas.repaint();
 			}
 		});
@@ -177,6 +186,8 @@ public class objectVisualizerFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				bObj.setRendType(BuildObject.renderType.WIRESOLID);
+				if(bObj.getObj() != null)
+					textItem.setEnabled(true);
 				canvas.repaint();
 			}
 		});
@@ -274,19 +285,20 @@ public class objectVisualizerFrame extends JFrame {
 					bObj.zoomOut();
 					canvas.repaint();
 					break;
-				case KeyEvent.VK_PERIOD:
+				case KeyEvent.VK_R:
 					if (loaded) {
 						bObj.setPath(null);
 						canvas.repaint();
 						loaded = false;
+						textItem.setEnabled(false);
+						textItem.setSelected(false);
 					}
 					break;
 				case KeyEvent.VK_RIGHT:
 					if(event.isShiftDown()){
 						bObj.increaseOblVar();
-						bObj.increasePrespVar();
 					} else if(event.isControlDown()) {
-						bObj.decreaseAxonAAngle();
+						bObj.increaseAxonTetaAngle();
 					} else
 						bObj.increasePrincipalRotHorVar();
 					canvas.repaint();
@@ -294,23 +306,26 @@ public class objectVisualizerFrame extends JFrame {
 				case KeyEvent.VK_LEFT:
 					if(event.isShiftDown()) {
 						bObj.decreaseOblVar();
-						bObj.decreasePrespVar();
 					} else if(event.isControlDown()) {
-						bObj.increaseAxonAAngle();
+						bObj.decreaseAxonTetaAngle();
 					} else 
 						bObj.decreasePrincipalRotHorVar();
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_UP:
 					if(event.isControlDown()) {
-						bObj.increaseAxonBAngle();
+						bObj.increaseAxonFiAngle();
+					} else if(event.isShiftDown()) {
+						bObj.increasePrespVar();
 					} else
 						bObj.increasePrincipalRotVerVar();
 					canvas.repaint();
 					break;
 				case KeyEvent.VK_DOWN:
 					if(event.isControlDown()) {
-						bObj.decreaseAxonBAngle();
+						bObj.decreaseAxonFiAngle();
+					} else if(event.isShiftDown()) {
+						bObj.decreasePrespVar();
 					} else
 						bObj.decreasePrincipalRotVerVar();
 					canvas.repaint();

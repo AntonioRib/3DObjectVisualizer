@@ -51,6 +51,8 @@ public class BuildObject implements GLEventListener {
 
 	public static int VIEWPORTNUMBER = 4;
 	public static int GRID_SIDE = 1;
+	private static final int axonAAngle = 42;
+	private static final int axonBAngle = 7;
 	
 	private Shape obj;
 	private int width , height;
@@ -75,8 +77,8 @@ public class BuildObject implements GLEventListener {
 	private double oblVar = 45;
 	private int principalRotHorVar = 0;
 	private int principalRotVerVar = 0;
-	private int axonAAngle = 42;
-	private int axonBAngle = 7;
+	private double teta = Math.atan(Math.sqrt(Math.tan(axonAAngle*Math.PI/180)/(Math.tan(axonBAngle*Math.PI/180)))-(Math.PI/2));
+	private double fi = Math.asin(Math.sqrt((Math.tan(axonAAngle*Math.PI/180))*(Math.tan(axonBAngle*Math.PI/180))));
 
 	public BuildObject(int width, int height) {
 		this.width = width;
@@ -160,7 +162,7 @@ public class BuildObject implements GLEventListener {
 		gl.glColor3d(0.4, 0.8, 0.4);
 		float min;
 		if(obj != null)
-			min = obj.getyMin()/obj.getMaxAbs();
+			min = obj.getyMin()/(2*obj.getMaxAbs());
 		else
 			min = 0;
 		
@@ -177,7 +179,7 @@ public class BuildObject implements GLEventListener {
 	}
 	
 	private void drawBoundingBox(){
-		new GLUT().glutWireCube(2);
+		new GLUT().glutWireCube(1);
 	}
 	
 	private void drawObj(){
@@ -254,8 +256,6 @@ public class BuildObject implements GLEventListener {
 				gl.glMultMatrixd(mObl, 0);
 				break;
 			case PROJ_AXON: 
-				double teta = Math.atan(Math.sqrt(Math.tan(axonAAngle*Math.PI/180)/(Math.tan(axonBAngle*Math.PI/180)))-(Math.PI/2));
-				double fi = Math.asin(Math.sqrt((Math.tan(axonAAngle*Math.PI/180))*(Math.tan(axonBAngle*Math.PI/180))));
 				gl.glRotated(fi*180/Math.PI, 1, 0, 0);
 				gl.glRotated(teta*180/Math.PI, 0, 1, 0);
 				break;
@@ -270,12 +270,12 @@ public class BuildObject implements GLEventListener {
 		if(obj != null)	{	
 			if(isUseBoundingBox())
 				drawBoundingBox();
-			gl.glTranslatef(0, -(obj.getyCenter()/obj.getMaxAbs()), 0);	
+			gl.glTranslatef(0, -(obj.getyCenter()/(2*obj.getMaxAbs())), 0);	
 		}
 		drawFloor();
 
 		if(obj != null){
-			gl.glScalef(1/obj.getMaxAbs(), 1/obj.getMaxAbs(), 1/obj.getMaxAbs());
+			gl.glScalef(1/(2*obj.getMaxAbs()), 1/(2*obj.getMaxAbs()), 1/(2*obj.getMaxAbs()));
 			gl.glTranslatef(-(obj.getxCenter()/obj.getMaxAbs()), 0, -(obj.getzCenter()/obj.getMaxAbs()));
 			renderScene(gl, rendType);
 		}
@@ -464,20 +464,24 @@ public class BuildObject implements GLEventListener {
 
 	public void increasePrespVar() {
 		this.prespVar+=10;
+		System.out.println("d: "+prespVar);
 	}
 	
 	public void decreasePrespVar() {
 		if(prespVar-10 > 0)
 			this.prespVar-=10;
+		System.out.println("d: "+prespVar);
 	}
 
 	public void increaseOblVar() {
 		this.oblVar += 5;
+		System.out.println("alpha: "+oblVar);
 	}
 	
 	public void decreaseOblVar() {
 		if(oblVar-5 > 0)
 			this.oblVar -= 5;
+		System.out.println("alpha: "+oblVar);
 	}
 
 	public void increasePrincipalRotHorVar() {
@@ -496,28 +500,24 @@ public class BuildObject implements GLEventListener {
 		this.principalRotVerVar -= 5;
 	}
 	
-	public void increaseAxonAAngle() {
-		System.out.println("A: "+ (axonAAngle));
-		if(axonAAngle+5<87)
-			this.axonAAngle += 5;
+	public void increaseAxonTetaAngle() {
+			this.teta += 0.1f;
+			System.out.println("Teta: "+teta);
 	}
 	
-	public void decreaseAxonAAngle() {
-		System.out.println("A: "+ (axonAAngle));
-		if(axonAAngle-5>0)
-			this.axonAAngle -= 5;
+	public void decreaseAxonTetaAngle() {
+			this.teta -= 0.1f;
+			System.out.println("Teta: "+teta);
 	}
 	
-	public void increaseAxonBAngle() {
-		System.out.println("B: "+ (axonBAngle+5));
-		if(axonBAngle+5<20)
-			this.axonBAngle += 5;
+	public void increaseAxonFiAngle() {
+			this.fi += 0.1f;
+			System.out.println("Fi: "+fi);
 	}
 	
-	public void decreaseAxonBAngle() {
-		System.out.println("B: "+ (axonBAngle-5));
-		if(axonBAngle-5>0)
-			this.axonBAngle -= 5;
+	public void decreaseAxonFiAngle() {
+			this.fi -= 0.1f;
+			System.out.println("Fi: "+fi);
 	}
 	
 	public void resetPrespVar(){
@@ -536,11 +536,17 @@ public class BuildObject implements GLEventListener {
 		this.principalRotVerVar = 0;
 	}
 	
+	public void resetAxonVars(){
+		teta = Math.atan(Math.sqrt(Math.tan(axonAAngle*Math.PI/180)/(Math.tan(axonBAngle*Math.PI/180)))-(Math.PI/2));
+		fi = Math.asin(Math.sqrt((Math.tan(axonAAngle*Math.PI/180))*(Math.tan(axonBAngle*Math.PI/180))));
+	}
+	
 	public void resetAll(){
 		resetOblVar();
 		resetPrespVar();
 		resetPrincipalRotHorVar();
 		resetPrincipalRotVerVar();
+		resetAxonVars();
 	}
 
 	public void turnOnBoundingBox() {
