@@ -30,6 +30,10 @@ import objects.BuildObject;
 
 public class objectVisualizerFrame extends JFrame {
 
+	/**
+	 * @author A. Ribeiro - 41674 Vasco Coelho - 41825
+	 */
+	
 	public static int DEFAULT_WIDTH = 400;
 	public static int DEFAULT_HEIGHT = 280;
 	private static final long serialVersionUID = 1L;

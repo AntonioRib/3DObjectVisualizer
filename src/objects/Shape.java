@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class Shape {
-
+	
+	/**
+	 * @author A. Ribeiro - 41674 Vasco Coelho - 41825
+	 */
+	
 	private final static String OBJ_VERTEX = "v";
 	private final static String OBJ_VERTEX_TEXTURE = "vt";
 	private final static String OBJ_FACE = "f";

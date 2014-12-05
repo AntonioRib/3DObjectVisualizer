@@ -2,6 +2,10 @@ package objects;
 
 public class Point3D {
 
+	/**
+	 * @author A. Ribeiro - 41674 Vasco Coelho - 41825
+	 */
+	
 	private float x, y, z;
 	
 	public Point3D(float x, float y, float z) {

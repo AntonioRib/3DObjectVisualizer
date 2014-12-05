@@ -9,6 +9,10 @@ import menus.objectVisualizerFrame;
 
 public class objectVisualizer {
 
+	/**
+	 * @author A. Ribeiro - 41674 Vasco Coelho - 41825
+	 */
+	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

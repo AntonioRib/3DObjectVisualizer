@@ -30,6 +30,7 @@ import com.jogamp.opengl.util.gl2.GLUT;
 
 /**
  * @author M. Próspero (Updated to JOGL2 by Fernando Birra)
+ * @modified A. Ribeiro - 41674 Vasco Coelho - 41825
  */
 
 public class BuildObject implements GLEventListener {
@@ -512,12 +513,12 @@ public class BuildObject implements GLEventListener {
 	
 	public void increaseAxonFiAngle() {
 			this.fi += 0.1f;
-			System.out.println("Fi: "+fi);
+			System.out.println("Gamma: "+fi);
 	}
 	
 	public void decreaseAxonFiAngle() {
 			this.fi -= 0.1f;
-			System.out.println("Fi: "+fi);
+			System.out.println("Gamma: "+fi);
 	}
 	
 	public void resetPrespVar(){

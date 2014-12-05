@@ -1,6 +1,9 @@
 package objects;
 import java.util.Vector;
 
+/**
+ * @author A. Ribeiro - 41674 Vasco Coelho - 41825
+ */
 
 public class Face {
 
