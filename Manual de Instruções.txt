@@ -1,0 +1,27 @@
+António Ribeiro - 41674
+Vasco Coelho - 41825
+
+Atalhos de teclado
+Tecla			 Função
+  1				Viewport1
+  2 			Viewport2
+  3				Viewport3
+  4 			Viewport4
+ Esc		  All Viewports
+  +				 +Zoom (também funciona com a roda do rato)
+  -				 -Zoom (também funciona com a roda do rato)
+  R				Reset
+ Right Arrow(RA)Changes rotation on Viewport1
+ Left Arrow(LA) Changes rotation on Viewport1
+ Up Arrow(UA)   Changes rotation on Viewport1
+ Down Arrow(DA) Changes rotation on Viewport1
+ Shift + RA		Increase Obliq prespective value
+ Shift + LA		Decrease Obliq prespective value
+ Shift + UA		Increase Prespective prespective value
+ Shift + DA		Decrease Prespective prespective value
+ Ctrl + RA		Increase Theta on Axonometric prespective value
+ Ctrl + LA		Decrease Theta on Axonometric prespective value
+ Ctrl + UA		Increase Gamma on Axonometric prespective value
+ Ctrl + DA		Decrease Gamma on Axonometric prespective value
+ 
+ Todas as outras opções têm um botão no layout.
